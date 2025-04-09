@@ -5,8 +5,18 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import CVTemplatesPage from "@/components/cv-templates";
+import React, { Suspense } from "react";
 
+// This is the Suspense boundary wrapping the component
 export default function CVEditorPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CVEditor />
+    </Suspense>
+  );
+}
+
+function CVEditor() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();

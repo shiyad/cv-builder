@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { CVEditor } from "@/components/cv/cv-editor";
+// import { CVEditor } from "@/components/cv/cv-editor";
 
 export default function CVEditorPage() {
   const { id } = useParams();
@@ -62,7 +62,7 @@ export default function CVEditorPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <CVEditor cv={cv} template={cv.template} />
+      {/* <CVEditor cv={cv} template={cv.template} /> */}
     </div>
   );
 }
