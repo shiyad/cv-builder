@@ -92,7 +92,7 @@ const defaultUrl = process.env.NEXT_PUBLIC_SITE_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "ResumeCraft - Professional CV Builder",
+  title: "CVInMinute - Professional CV Builder",
   description:
     "Create stunning, professional resumes in minutes with our easy-to-use CV builder",
 };
@@ -221,12 +221,6 @@ export default function RootLayout({
                 <div className="w-full max-w-7xl flex justify-between items-center p-3 px-5 text-sm">
                   <div className="flex gap-5 items-center font-semibold">
                     <Link href={"/"} className="flex items-center gap-2">
-                      {/* <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                        <span className="text-white font-bold text-sm">CV</span>
-                      </div>
-                      <span className="text-lg font-bold hidden sm:inline">
-                        ResumeCraft
-                      </span> */}
                       <Logo />
                     </Link>
                     <div className="hidden md:flex gap-6 ml-10">
@@ -375,11 +369,11 @@ export default function RootLayout({
                       <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                         <span className="text-white font-bold text-sm">CV</span>
                       </div>
-                      <span className="text-lg font-bold">ResumeCraft</span>
+                      <span className="text-lg font-bold">CvInMinute</span>
                     </div>
 
                     <div className="text-gray-400 text-sm">
-                      © {new Date().getFullYear()} ResumeCraft. All rights
+                      © {new Date().getFullYear()} CvInMinute. All rights
                       reserved.
                     </div>
                   </div>
