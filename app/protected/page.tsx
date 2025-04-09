@@ -1,38 +1,42 @@
-import FetchDataSteps from "@/components/tutorial/fetch-data-steps";
+// app/protected/dashboard/page.tsx
 import { createClient } from "@/utils/supabase/server";
-import { InfoIcon } from "lucide-react";
 import { redirect } from "next/navigation";
+import { DashboardHeader } from "@/components/dashboard-header";
+import { WelcomeBanner } from "@/components/welcome-banner";
+import { DashboardStats } from "@/components/dashboard-stats";
+import { ActivityFeed } from "@/components/activity-feed";
+import { QuickActions } from "@/components/quick-actions";
+import { UserCVs } from "@/components/user-cvs";
 
-export default async function ProtectedPage() {
+export default async function Dashboard() {
   const supabase = await createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    return redirect("/sign-in");
-  }
+  if (!user) return redirect("/sign-in");
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-12">
-      <div className="w-full">
-        <div className="bg-accent text-sm p-3 px-5 rounded-md text-foreground flex gap-3 items-center">
-          <InfoIcon size="16" strokeWidth={2} />
-          This is a protected page that you can only see as an authenticated
-          user
+    <div className="min-h-screen bg-gray-50">
+      <DashboardHeader />
+
+      <main className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+        <WelcomeBanner />
+        <DashboardStats userId={user.id} />
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">
+              Recent Activity
+            </h2>
+            <ActivityFeed userId={user.id} />
+          </div>
+
+          <QuickActions />
         </div>
-      </div>
-      <div className="flex flex-col gap-2 items-start">
-        <h2 className="font-bold text-2xl mb-4">Your user details</h2>
-        <pre className="text-xs font-mono p-3 rounded border max-h-32 overflow-auto">
-          {JSON.stringify(user, null, 2)}
-        </pre>
-      </div>
-      <div>
-        <h2 className="font-bold text-2xl mb-4">Next steps</h2>
-        <FetchDataSteps />
-      </div>
+
+        <UserCVs userId={user.id} />
+      </main>
     </div>
   );
 }
