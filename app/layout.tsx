@@ -88,6 +88,7 @@ import Logo from "@/components/logo";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import PaypalProviderClient from "@/components/PaypalProviderClient";
 import LogoBlackBg from "@/components/logo-black-bg";
+import { Analytics } from "@vercel/analytics/react";
 
 const defaultUrl = process.env.NEXT_PUBLIC_SITE_URL
   ? `https://${process.env.NEXT_PUBLIC_SITE_URL}`
@@ -160,6 +161,7 @@ export default function RootLayout({
                 </nav>
 
                 {children}
+                <Analytics />
 
                 <footer className="bg-gray-900 text-white py-12">
                   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -257,6 +259,14 @@ export default function RootLayout({
                               className="text-gray-400 hover:text-white"
                             >
                               Privacy Policy
+                            </Link>
+                          </li>
+                          <li>
+                            <Link
+                              href="/return-policy"
+                              className="text-gray-400 hover:text-white"
+                            >
+                              Return Policy
                             </Link>
                           </li>
                           <li>
