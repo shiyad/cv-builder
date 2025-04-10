@@ -1,7 +1,7 @@
 "use client";
 import { useTheme } from "next-themes";
 
-const LogoLight = () => (
+const LogoDark = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="300"
@@ -100,7 +100,7 @@ const LogoLight = () => (
   </svg>
 );
 
-const logoDark = () => (
+const LogoLight = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="300"
@@ -199,7 +199,7 @@ const logoDark = () => (
   </svg>
 );
 
-export default function Logo() {
+export default function LogoBlackBg() {
   const { theme } = useTheme();
-  return theme === "dark" ? logoDark() : <LogoLight />;
+  return theme === "dark" ? LogoDark() : <LogoLight />;
 }

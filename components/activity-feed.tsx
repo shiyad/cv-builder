@@ -6,14 +6,14 @@ export async function ActivityFeed({ userId }: { userId: string }) {
   const supabase = await createClient();
 
   const { data: activities } = await supabase
-    .from("activities")
+    .from("activity_log")
     .select(
       `
         id,
-        action_type,
+        activity_type,
         created_at,
-        cvs(id, title),
-        templates(id, name)
+        user_cvs(id, title),
+        cv_templates(id, name)
       `
     )
     .eq("user_id", userId)
@@ -21,13 +21,13 @@ export async function ActivityFeed({ userId }: { userId: string }) {
     .limit(5);
 
   const getActivityMessage = (activity: any) => {
-    switch (activity.action_type) {
+    switch (activity.activity_type) {
       case "create_cv":
-        return `Created new CV: ${activity.cvs?.title || "Untitled"}`;
+        return `Created new CV: ${activity.user_cvs?.title || "Untitled"}`;
       case "download":
-        return `Downloaded CV: ${activity.cvs?.title || "Untitled"}`;
+        return `Downloaded CV: ${activity.user_cvs?.title || "Untitled"}`;
       case "template_used":
-        return `Used template: ${activity.templates?.name}`;
+        return `Used template: ${activity.cv_templates?.name}`;
       default:
         return "Performed an action";
     }

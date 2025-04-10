@@ -87,6 +87,7 @@ import AuthButton from "@/components/header-auth";
 import Logo from "@/components/logo";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import PaypalProviderClient from "@/components/PaypalProviderClient";
+import LogoBlackBg from "@/components/logo-black-bg";
 
 const defaultUrl = process.env.NEXT_PUBLIC_SITE_URL
   ? `https://${process.env.NEXT_PUBLIC_SITE_URL}`
@@ -272,12 +273,7 @@ export default function RootLayout({
 
                     <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
                       <div className="flex items-center gap-2 mb-4 md:mb-0">
-                        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                          <span className="text-white font-bold text-sm">
-                            CV
-                          </span>
-                        </div>
-                        <span className="text-lg font-bold">CvInMinute</span>
+                        <LogoBlackBg />
                       </div>
 
                       <div className="text-gray-400 text-sm">

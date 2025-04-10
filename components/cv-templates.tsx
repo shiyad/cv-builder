@@ -26,6 +26,11 @@ import {
   Eye,
   EyeOff,
   GraduationCap,
+  SaveAll,
+  Loader2,
+  Trash2,
+  Save,
+  Check,
 } from "lucide-react";
 import clsx from "clsx";
 import { createClient } from "@/utils/supabase/client";
@@ -50,6 +55,12 @@ import { PilotTemplate } from "./templates/PilotTemplate";
 import { AccountingTemplate } from "./templates/AccountingTemplate";
 import { MinimalistTemplate } from "./templates/MinimalistTemplate";
 import { ExecutiveModernTemplate } from "./templates/ExecutiveModernTemplate";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@radix-ui/react-tooltip";
 
 // Template and color configurations
 const templates = [
@@ -516,6 +527,8 @@ export default function CVTemplatesPage({
         } = await supabase.auth.getUser();
         if (!user) throw new Error("Not authenticated");
 
+        debugger;
+
         // Get the full template data
         const template = templates.find((t) => t.id === selectedTemplate?.id);
         if (!template) throw new Error("Template not found");
@@ -523,7 +536,7 @@ export default function CVTemplatesPage({
         const cvData = {
           title: cvTitle,
           cv_data: form,
-          template_id: selectedTemplate,
+          template_id: selectedTemplate?.id,
           template_config: template.template_config, // Save the full config
           is_public: form.is_public || false,
         };
@@ -594,6 +607,16 @@ export default function CVTemplatesPage({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleObjectiveChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((prev) => ({
+      ...prev,
+      objective: {
+        ...prev.objective,
+        summary: e.target.value,
+      },
+    }));
   };
 
   const handleInputChange = <K extends keyof FormData>(
@@ -865,59 +888,6 @@ export default function CVTemplatesPage({
 
       return (
         <div className="space-y-6">
-          <div className="mt-6 space-y-3">
-            <Input
-              value={cvTitle}
-              onChange={(e) => setCvTitle(e.target.value)}
-              placeholder="CV Title"
-            />
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="public-toggle"
-                checked={form.is_public || false}
-                onCheckedChange={(checked: any) =>
-                  setForm((prev) => ({ ...prev, is_public: checked }))
-                }
-              />
-              <Label htmlFor="public-toggle">
-                {form.is_public ? (
-                  <span className="flex items-center gap-1">
-                    <Eye className="w-4 h-4" /> Public
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-1">
-                    <EyeOff className="w-4 h-4" /> Private
-                  </span>
-                )}
-              </Label>
-            </div>
-            <div className="flex gap-2">
-              <Button
-                onClick={() => saveCV(false)}
-                disabled={isLoading}
-                className="flex-1"
-              >
-                {isLoading ? "Saving..." : "Save CV"}
-              </Button>
-              <Button
-                onClick={() => saveCV(true)}
-                disabled={isLoading}
-                variant="outline"
-              >
-                Save As New
-              </Button>
-            </div>
-            {cvId && (
-              <Button
-                onClick={deleteCV}
-                disabled={isLoading}
-                variant="destructive"
-                className="w-full"
-              >
-                {isLoading ? "Deleting..." : "Delete CV"}
-              </Button>
-            )}
-          </div>
           {items.map((item: any, index: number) => (
             <div
               key={index}
@@ -1002,44 +972,61 @@ export default function CVTemplatesPage({
             />
           </div>
         )}
-        {Object.entries(properties).map(([key, config]: [string, any]) => (
-          <div key={key}>
-            <Label>{config.title || key}</Label>
-            {config.enum ? (
-              <select
-                className="w-full border rounded px-3 py-2"
-                value={sectionData[key as keyof typeof sectionData] || ""}
-                onChange={(e) =>
-                  handleInputChange(
-                    section.key as keyof FormData,
-                    key,
-                    e.target.value
-                  )
-                }
-              >
-                <option value="">Select</option>
-                {config.enum.map((option: string) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <Input
-                type={config.format === "email" ? "email" : "text"}
-                value={sectionData[key as keyof typeof sectionData] || ""}
-                placeholder={key}
-                onChange={(e) =>
-                  handleInputChange(
-                    section.key as keyof FormData,
-                    key,
-                    e.target.value
-                  )
-                }
-              />
-            )}
+
+        {section.key === "objective" && (
+          <div>
+            <Label>Summary</Label>
+            <Input
+              type="text"
+              value={form.objective?.summary || ""}
+              placeholder="Enter your professional summary"
+              onChange={(e) =>
+                handleInputChange("objective", "summary", e.target.value)
+              }
+            />
           </div>
-        ))}
+        )}
+
+        {Object.entries(properties)
+          .filter(([key]) => section.key !== "objective" || key !== "summary")
+          .map(([key, config]: [string, any]) => (
+            <div key={key}>
+              <Label>{config.title || key}</Label>
+              {config.enum ? (
+                <select
+                  className="w-full border rounded px-3 py-2"
+                  value={sectionData[key as keyof typeof sectionData] || ""}
+                  onChange={(e) =>
+                    handleInputChange(
+                      section.key as keyof FormData,
+                      key,
+                      e.target.value
+                    )
+                  }
+                >
+                  <option value="">Select</option>
+                  {config.enum.map((option: string) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <Input
+                  type={config.format === "email" ? "email" : "text"}
+                  value={sectionData[key as keyof typeof sectionData] || ""}
+                  placeholder={key}
+                  onChange={(e) =>
+                    handleInputChange(
+                      section.key as keyof FormData,
+                      key,
+                      e.target.value
+                    )
+                  }
+                />
+              )}
+            </div>
+          ))}
       </div>
     );
   };
@@ -1103,30 +1090,140 @@ export default function CVTemplatesPage({
       <div className="w-1/2 border-r overflow-y-auto p-6 bg-background">
         {leftPanelView === "menu" ? (
           <>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold tracking-tight">
-                CV Customization
-              </h2>
-              <Badge variant="outline">Draft</Badge>
+            {/* Header Section */}
+            <div className="flex flex-col gap-4 mb-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                  CV Customization
+                </h2>
+                <Badge variant="outline" className="px-3 py-1">
+                  Draft
+                </Badge>
+              </div>
+
+              {/* Title and Actions Bar */}
+              <div className="flex items-center gap-4 bg-muted/50 p-3 rounded-lg">
+                <Input
+                  value={cvTitle}
+                  onChange={(e) => setCvTitle(e.target.value)}
+                  placeholder="CV Title"
+                  className="flex-1 min-w-0"
+                />
+
+                <div className="flex items-center gap-2">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="flex items-center space-x-1">
+                          <Switch
+                            id="public-toggle"
+                            checked={form.is_public || false}
+                            onCheckedChange={(checked) =>
+                              setForm((prev) => ({
+                                ...prev,
+                                is_public: checked,
+                              }))
+                            }
+                          />
+                          <Label
+                            htmlFor="public-toggle"
+                            className="cursor-pointer"
+                          >
+                            {form.is_public ? (
+                              <Eye className="h-4 w-4 text-primary" />
+                            ) : (
+                              <EyeOff className="h-4 w-4 text-muted-foreground" />
+                            )}
+                          </Label>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {form.is_public ? "Public CV" : "Private CV"}
+                      </TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          onClick={() => saveCV(false)}
+                          disabled={isLoading}
+                          size="icon"
+                          variant="ghost"
+                          className="h-8 w-8"
+                        >
+                          {isLoading ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Save className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Save CV</TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          onClick={() => saveCV(true)}
+                          disabled={isLoading}
+                          size="icon"
+                          variant="ghost"
+                          className="h-8 w-8"
+                        >
+                          <SaveAll className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Save As New</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  {cvId && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            onClick={deleteCV}
+                            disabled={isLoading}
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8 text-destructive hover:text-destructive"
+                          >
+                            {isLoading ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Delete CV</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                </div>
+              </div>
             </div>
 
+            {/* Main Content */}
             <Tabs defaultValue="sections">
-              <TabsList className="grid grid-cols-3 w-full">
-                <TabsTrigger value="sections" className="flex gap-2">
-                  <FileText className="w-4 h-4" /> Sections
+              <TabsList className="grid grid-cols-2 w-full bg-muted/50">
+                <TabsTrigger value="sections" className="flex gap-2 py-2">
+                  <FileText className="w-4 h-4" />
+                  <span>Sections</span>
                 </TabsTrigger>
-                <TabsTrigger value="templates" className="flex gap-2">
-                  <LayoutTemplate className="w-4 h-4" /> Templates
+                <TabsTrigger value="templates" className="flex gap-2 py-2">
+                  <LayoutTemplate className="w-4 h-4" />
+                  <span>Templates</span>
                 </TabsTrigger>
               </TabsList>
 
-              {/* Sections */}
+              {/* Sections Panel */}
               <TabsContent value="sections" className="pt-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">CV Sections</CardTitle>
+                <Card className="border-none shadow-sm">
+                  <CardHeader className="px-4 py-3">
+                    <CardTitle className="text-base font-medium">
+                      CV Sections
+                    </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-2">
+                  <CardContent className="p-2 space-y-1">
                     {sections.map((section) => (
                       <div
                         key={section.id}
@@ -1135,11 +1232,12 @@ export default function CVTemplatesPage({
                           setLeftPanelView("form");
                         }}
                         className={clsx(
-                          "p-4 rounded-lg border cursor-pointer flex items-center gap-3 hover:bg-accent/50",
+                          "p-3 rounded-md cursor-pointer flex items-center gap-3 transition-colors",
+                          "hover:bg-accent/50",
                           activeSection === section.id && "bg-accent"
                         )}
                       >
-                        <div className="w-7 h-7 rounded-full bg-muted p-2 text-muted-foreground">
+                        <div className="w-8 h-8 rounded-full bg-muted/80 flex items-center justify-center p-2 text-muted-foreground">
                           {section.icon}
                         </div>
                         <div>
@@ -1153,26 +1251,29 @@ export default function CVTemplatesPage({
                 </Card>
               </TabsContent>
 
-              {/* Templates */}
+              {/* Templates Panel */}
               <TabsContent value="templates" className="pt-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Templates</CardTitle>
+                <Card className="border-none shadow-sm">
+                  <CardHeader className="px-4 py-3">
+                    <CardTitle className="text-base font-medium">
+                      Templates
+                    </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <CardContent>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {templates.map((template) => (
                         <div
                           key={template.id}
                           className={clsx(
-                            "group border rounded-lg cursor-pointer hover:shadow-md transition-all relative overflow-hidden h-[200px]",
+                            "group relative rounded-lg overflow-hidden h-[180px]",
+                            "border cursor-pointer transition-all",
+                            "hover:shadow-md hover:border-primary/30",
                             selectedTemplate?.id === template.id &&
-                              "ring-2 ring-primary"
+                              "ring-2 ring-primary border-primary/50"
                           )}
                           onClick={() => setSelectedTemplate(template)}
                         >
-                          {/* Background Image */}
-                          <div className="absolute inset-0 z-0">
+                          <div className="absolute inset-0">
                             <Image
                               src={template.thumbnail_url}
                               alt={template.name}
@@ -1180,28 +1281,26 @@ export default function CVTemplatesPage({
                               className="object-cover object-top"
                               quality={80}
                             />
-                            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20" />
                           </div>
 
-                          {/* Premium Badge */}
                           {template.is_premium && (
-                            <Badge className="absolute top-2 right-2 z-10 bg-yellow-500">
+                            <Badge className="absolute top-2 right-2 bg-amber-500 hover:bg-amber-500/90">
                               Premium
                             </Badge>
                           )}
 
-                          {/* Content Overlay */}
-                          <div className="relative z-10 h-full flex flex-col justify-end p-4 text-white">
-                            <h3 className="text-lg font-semibold drop-shadow-md">
-                              {template.name}
-                            </h3>
-                            {selectedTemplate?.id === template.id && (
-                              <div className="absolute top-2 left-2">
-                                <div className="w-6 h-6 flex items-center justify-center bg-primary rounded-full text-white">
-                                  ✓
+                          <div className="relative z-10 h-full flex flex-col justify-end p-3">
+                            <div className="flex justify-between items-end">
+                              <h3 className="text-white font-medium drop-shadow-md">
+                                {template.name}
+                              </h3>
+                              {selectedTemplate?.id === template.id && (
+                                <div className="w-5 h-5 flex items-center justify-center bg-primary rounded-full text-white">
+                                  <Check className="h-3 w-3" />
                                 </div>
-                              </div>
-                            )}
+                              )}
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -1212,33 +1311,44 @@ export default function CVTemplatesPage({
             </Tabs>
           </>
         ) : (
-          <>
-            <div className="flex items-center gap-3 mb-4">
-              <ArrowLeft
+          /* Section Editor View */
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => setLeftPanelView("menu")}
-                className="cursor-pointer"
-              />
-              <h3 className="text-xl font-bold">Customize Section</h3>
+                className="h-8 w-8"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <h3 className="text-lg font-semibold">Customize Section</h3>
             </div>
-            <Separator className="my-3" />
-            {sections.length && activeSection
-              ? renderFormFields(sections.find((s) => s.id === activeSection)!)
-              : null}
-          </>
+
+            <Separator />
+
+            <div className="pt-2">
+              {sections.length && activeSection
+                ? renderFormFields(
+                    sections.find((s) => s.id === activeSection)!
+                  )
+                : null}
+            </div>
+          </div>
         )}
       </div>
 
       {/* Preview Panel */}
-      <div className="w-1/2 overflow-y-auto flex flex-col bg-gray-50 print:bg-white print:p-0 print:m-0">
-        {/* Header with Download Button */}
-        <div className="flex justify-end items-center px-4 py-1 border-b bg-white sticky top-0 z-10 print:hidden">
+      <div className="w-1/2 overflow-y-auto flex flex-col bg-gray-50 dark:bg-gray-900 print:bg-white print:p-0 print:m-0">
+        {/* Preview Header */}
+        <div className="flex justify-between items-center px-4 py-2 border-b bg-white dark:bg-gray-800 sticky top-0 z-10 print:hidden">
+          <div className="text-sm text-muted-foreground">Preview Mode</div>
           {cvId && cvTitle && (
             <DownloadButton
               cv={{
                 id: cvId,
                 title: cvTitle,
                 cv_data: form,
-                //user_id: "current-user-id",
               }}
               template={{
                 id: selectedTemplate?.id,
@@ -1249,11 +1359,11 @@ export default function CVTemplatesPage({
           )}
         </div>
 
-        {/* Actual CV Preview */}
+        {/* CV Preview Content */}
         <div className="flex justify-center print:p-0 print:m-0 p-4 print:block">
           <div
             id="cv-preview-wrapper"
-            className="w-full max-w-[900px] print:w-full print:max-w-none"
+            className="w-full max-w-[900px] print:w-full print:max-w-none bg-white shadow-sm overflow-hidden"
           >
             {renderPreview()}
           </div>
