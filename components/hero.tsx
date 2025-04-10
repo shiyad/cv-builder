@@ -76,7 +76,7 @@ export default function Hero() {
             <div className="flex flex-col sm:flex-row gap-4 pt-2">
               <div className="mt-10 flex items-center justify-center gap-x-6">
                 <a
-                  href="#"
+                  href="/sign-up"
                   className="rounded-md text-white bg-blue-500 px-3.5 py-2.5 text-sm font-semibold text-blue shadow-xs hover:bg-blue-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
                   Get started

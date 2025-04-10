@@ -235,9 +235,7 @@ export default function CVTemplatesPage({
   );
 
   const [selectedColor, setSelectedColor] = useState("blue");
-  const [selectedTemplate, setSelectedTemplate] = useState(
-    initialData?.template_id || ""
-  ); // useState("template1");
+  const [selectedTemplate, setSelectedTemplate] = useState<Template>(); // useState("template1");
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [leftPanelView, setLeftPanelView] = useState<"menu" | "form">("menu");
   const [sections, setSections] = useState<Section[]>([]);
@@ -278,7 +276,7 @@ export default function CVTemplatesPage({
           }
         } else if (data.length > 0) {
           // Set first template as default for new CVs
-          setSelectedTemplate(data[0].id);
+          setSelectedTemplate(data[0]);
           setSelectedTemplateConfig(data[0].template_config);
         }
       }
@@ -290,7 +288,7 @@ export default function CVTemplatesPage({
   // Update template config when selected template changes
   useEffect(() => {
     if (selectedTemplate) {
-      const template = templates.find((t) => t.id === selectedTemplate);
+      const template = templates.find((t) => t.id === selectedTemplate.id);
       if (template) {
         setSelectedTemplateConfig(template.template_config);
       }
@@ -497,7 +495,7 @@ export default function CVTemplatesPage({
         });
         // Ensure template_id is set properly
         if (data.template_id) {
-          setSelectedTemplate(data.template_id);
+          setSelectedTemplate(data);
         }
         setCvId(data.id);
         setCvTitle(data.title);
@@ -519,7 +517,7 @@ export default function CVTemplatesPage({
         if (!user) throw new Error("Not authenticated");
 
         // Get the full template data
-        const template = templates.find((t) => t.id === selectedTemplate);
+        const template = templates.find((t) => t.id === selectedTemplate?.id);
         if (!template) throw new Error("Template not found");
 
         const cvData = {
@@ -1063,7 +1061,7 @@ export default function CVTemplatesPage({
       previewMode: false,
     };
 
-    switch (selectedTemplate) {
+    switch (selectedTemplate?.id) {
       case "53994530-26b3-41dd-879d-9ba9e23c11b2":
         return <ClassicTemplate {...templateProps} />;
       case "e0a47d34-165a-47cb-9c23-05204be4307a":
@@ -1168,10 +1166,10 @@ export default function CVTemplatesPage({
                           key={template.id}
                           className={clsx(
                             "group border rounded-lg cursor-pointer hover:shadow-md transition-all relative overflow-hidden h-[200px]",
-                            selectedTemplate === template.id &&
+                            selectedTemplate?.id === template.id &&
                               "ring-2 ring-primary"
                           )}
-                          onClick={() => setSelectedTemplate(template.id)}
+                          onClick={() => setSelectedTemplate(template)}
                         >
                           {/* Background Image */}
                           <div className="absolute inset-0 z-0">
@@ -1197,7 +1195,7 @@ export default function CVTemplatesPage({
                             <h3 className="text-lg font-semibold drop-shadow-md">
                               {template.name}
                             </h3>
-                            {selectedTemplate === template.id && (
+                            {selectedTemplate?.id === template.id && (
                               <div className="absolute top-2 left-2">
                                 <div className="w-6 h-6 flex items-center justify-center bg-primary rounded-full text-white">
                                   ✓
@@ -1243,8 +1241,9 @@ export default function CVTemplatesPage({
                 //user_id: "current-user-id",
               }}
               template={{
-                id: selectedTemplate,
+                id: selectedTemplate?.id,
                 template_config: selectedTemplateConfig,
+                is_premium: selectedTemplate?.is_premium,
               }}
             />
           )}

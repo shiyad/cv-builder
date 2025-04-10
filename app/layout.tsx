@@ -76,7 +76,6 @@
 //   );
 // }
 
-import DeployButton from "@/components/deploy-button";
 import { EnvVarWarning } from "@/components/env-var-warning";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
@@ -85,6 +84,9 @@ import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import "./globals.css";
 import AuthButton from "@/components/header-auth";
+import Logo from "@/components/logo";
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import PaypalProviderClient from "@/components/PaypalProviderClient";
 
 const defaultUrl = process.env.NEXT_PUBLIC_SITE_URL
   ? `https://${process.env.NEXT_PUBLIC_SITE_URL}`
@@ -102,105 +104,6 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-const Logo = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="300"
-    zoomAndPan="magnify"
-    viewBox="0 0 450 74.999997"
-    height="100"
-    preserveAspectRatio="xMidYMid meet"
-    version="1.0"
-  >
-    <defs>
-      <g />
-      <clipPath id="e724e98a49">
-        <path
-          d="M 106 11.105469 L 157 11.105469 L 157 60.605469 L 106 60.605469 Z M 106 11.105469 "
-          clip-rule="nonzero"
-        />
-      </clipPath>
-    </defs>
-    <path
-      fill="#000000"
-      d="M 133.875 39.660156 C 133.621094 39.113281 134.097656 38.660156 134.257812 38.152344 C 134.683594 37.21875 134.421875 36.15625 133.984375 35.273438 C 134.625 32.597656 135.28125 29.921875 135.960938 27.253906 C 134.167969 29.402344 132.605469 31.726562 130.863281 33.925781 C 129.121094 34.15625 127.792969 35.941406 128.1875 37.683594 C 128.390625 39.023438 129.574219 39.957031 130.820312 40.28125 C 133.449219 45.613281 136.011719 50.976562 138.617188 56.328125 C 138.558594 55.941406 138.476562 55.566406 138.375 55.191406 C 136.875 50.011719 135.375 44.84375 133.875 39.660156 Z M 132.34375 37.148438 C 132.351562 37.929688 131.296875 38.457031 130.710938 37.929688 C 130.101562 37.542969 130.113281 36.582031 130.75 36.226562 C 131.378906 35.6875 132.453125 36.347656 132.34375 37.148438 Z M 132.34375 37.148438 "
-      fill-opacity="1"
-      fill-rule="nonzero"
-    />
-    <g clip-path="url(#e724e98a49)">
-      <path
-        fill="#000000"
-        d="M 156.335938 31.664062 C 155.433594 27.195312 153.335938 22.964844 150.265625 19.589844 C 146.605469 15.496094 141.558594 12.75 136.195312 11.664062 C 134.25 11.441406 132.292969 11.105469 130.335938 11.277344 C 128.390625 11.347656 126.484375 11.734375 124.589844 12.140625 L 124.597656 12.242188 C 115.777344 14.550781 108.582031 22.15625 106.757812 31.074219 C 106.007812 34.59375 105.84375 38.34375 106.738281 41.839844 C 108.347656 50.621094 115.230469 58.089844 123.707031 60.746094 C 123.738281 60.757812 123.777344 60.765625 123.816406 60.789062 C 123.867188 60.808594 123.917969 60.828125 123.960938 60.839844 C 123.980469 60.847656 124 60.847656 124.019531 60.859375 C 124.082031 60.878906 124.121094 60.898438 124.121094 60.898438 L 124.132812 60.300781 L 124.164062 56.710938 C 124.152344 51.136719 124.171875 45.570312 124.164062 39.996094 C 124.140625 38.667969 124.261719 37.332031 124 36.011719 C 123.828125 35.089844 123.078125 34.257812 122.132812 34.128906 C 120.511719 33.894531 118.871094 34.136719 117.25 33.996094 C 116.621094 33.925781 116.175781 33.304688 116.132812 32.71875 L 116.132812 32.675781 C 116.183594 30.648438 116.0625 28.613281 116.144531 26.574219 C 116.152344 25.835938 116.703125 25.074219 117.480469 25.042969 C 118.851562 24.890625 120.28125 24.710938 121.476562 23.960938 C 123.441406 23.117188 125.023438 21.578125 126.21875 19.832031 C 126.675781 19.125 127.476562 18.679688 128.328125 18.6875 C 130.375 18.667969 132.433594 18.6875 134.480469 18.6875 C 136.023438 18.699219 137.554688 18.648438 139.09375 18.699219 C 140.332031 18.71875 141.292969 19.933594 141.191406 21.132812 C 141.191406 25.601562 141.183594 30.082031 141.191406 34.554688 C 141.191406 36.234375 141.191406 37.917969 141.203125 39.601562 C 141.222656 46.421875 141.191406 53.234375 141.222656 60.046875 C 146.769531 57.757812 151.398438 53.429688 154.128906 48.097656 C 156.640625 43.046875 157.421875 37.1875 156.335938 31.664062 Z M 156.335938 31.664062 "
-        fill-opacity="1"
-        fill-rule="nonzero"
-      />
-    </g>
-    <g fill="#ffbf00" fill-opacity="1">
-      <g transform="translate(-1.773366, 58.619414)">
-        <g>
-          <path d="M 23.75 1.015625 C 19.789062 1.015625 16.210938 0.25 13.015625 -1.28125 C 9.828125 -2.8125 7.3125 -5.023438 5.46875 -7.921875 C 3.625 -10.828125 2.703125 -14.210938 2.703125 -18.078125 C 2.703125 -19.835938 2.90625 -21.660156 3.3125 -23.546875 C 4.382812 -28.585938 6.316406 -32.960938 9.109375 -36.671875 C 11.898438 -40.378906 15.429688 -43.222656 19.703125 -45.203125 C 23.972656 -47.179688 28.804688 -48.171875 34.203125 -48.171875 C 37.578125 -48.171875 40.523438 -47.832031 43.046875 -47.15625 C 45.566406 -46.488281 47.789062 -45.429688 49.71875 -43.984375 L 47.296875 -32.65625 C 45.671875 -34.226562 43.6875 -35.375 41.34375 -36.09375 C 39.007812 -36.8125 36.222656 -37.171875 32.984375 -37.171875 C 28.359375 -37.171875 24.523438 -35.957031 21.484375 -33.53125 C 18.453125 -31.101562 16.484375 -27.773438 15.578125 -23.546875 C 15.179688 -21.742188 14.984375 -20.078125 14.984375 -18.546875 C 14.984375 -15.671875 15.914062 -13.5 17.78125 -12.03125 C 19.644531 -10.570312 22.78125 -9.84375 27.1875 -9.84375 C 30.425781 -9.84375 33.40625 -10.222656 36.125 -10.984375 C 38.851562 -11.753906 41.5 -12.972656 44.0625 -14.640625 L 41.625 -3.375 C 36.769531 -0.445312 30.8125 1.015625 23.75 1.015625 Z M 23.75 1.015625 " />
-        </g>
-      </g>
-    </g>
-    <g fill="#ffbf00" fill-opacity="1">
-      <g transform="translate(44.236697, 58.619414)">
-        <g>
-          <path d="M 8.296875 -47.15625 L 20.640625 -47.15625 L 25.96875 -15.78125 L 44.671875 -47.15625 L 57.75 -47.15625 L 28.9375 0 L 17.203125 0 Z M 8.296875 -47.15625 " />
-        </g>
-      </g>
-    </g>
-    <g fill="#000000" fill-opacity="1">
-      <g transform="translate(218.245069, 60.374994)">
-        <g>
-          <path d="M 3.109375 -48.359375 L 14.875 -48.359375 L 28.84375 -18.40625 L 42.890625 -48.359375 L 54.59375 -48.359375 L 54.59375 0 L 43.171875 0 L 43.171875 -24.28125 L 31.625 0 L 26.078125 0 L 14.59375 -24.28125 L 14.59375 0 L 3.109375 0 Z M 3.109375 -48.359375 " />
-        </g>
-      </g>
-    </g>
-    <g fill="#000000" fill-opacity="1">
-      <g transform="translate(275.947503, 60.374994)">
-        <g>
-          <path d="M 9.609375 -37.640625 C 7.765625 -37.640625 6.21875 -38.238281 4.96875 -39.4375 C 3.726562 -40.632812 3.109375 -42.15625 3.109375 -44 C 3.109375 -45.800781 3.726562 -47.3125 4.96875 -48.53125 C 6.21875 -49.757812 7.765625 -50.375 9.609375 -50.375 C 11.410156 -50.375 12.945312 -49.757812 14.21875 -48.53125 C 15.488281 -47.3125 16.125 -45.800781 16.125 -44 C 16.125 -42.207031 15.488281 -40.695312 14.21875 -39.46875 C 12.945312 -38.25 11.410156 -37.640625 9.609375 -37.640625 Z M 3.53125 -33.203125 L 15.703125 -33.203125 L 15.703125 0 L 3.53125 0 Z M 3.53125 -33.203125 " />
-        </g>
-      </g>
-    </g>
-    <g fill="#000000" fill-opacity="1">
-      <g transform="translate(295.181643, 60.374994)">
-        <g>
-          <path d="M 3.109375 -33.203125 L 14.875 -33.203125 L 14.875 -29.546875 C 16.300781 -31.109375 18.03125 -32.28125 20.0625 -33.0625 C 22.09375 -33.851562 24.210938 -34.25 26.421875 -34.25 C 31.085938 -34.25 34.535156 -33.035156 36.765625 -30.609375 C 39.003906 -28.191406 40.125 -24.90625 40.125 -20.75 L 40.125 0 L 27.953125 0 L 27.953125 -19.171875 C 27.953125 -22.898438 26.242188 -24.765625 22.828125 -24.765625 C 21.265625 -24.765625 19.835938 -24.40625 18.546875 -23.6875 C 17.253906 -22.976562 16.171875 -21.882812 15.296875 -20.40625 L 15.296875 0 L 3.109375 0 Z M 3.109375 -33.203125 " />
-        </g>
-      </g>
-    </g>
-    <g fill="#000000" fill-opacity="1">
-      <g transform="translate(338.077941, 60.374994)">
-        <g>
-          <path d="M 16.46875 1.03125 C 11.894531 1.03125 8.46875 -0.234375 6.1875 -2.765625 C 3.90625 -5.304688 2.765625 -8.648438 2.765625 -12.796875 L 2.765625 -33.203125 L 14.9375 -33.203125 L 14.9375 -14.1875 C 14.9375 -10.351562 16.671875 -8.4375 20.140625 -8.4375 C 21.703125 -8.4375 23.128906 -8.804688 24.421875 -9.546875 C 25.710938 -10.285156 26.773438 -11.367188 27.609375 -12.796875 L 27.609375 -33.203125 L 39.78125 -33.203125 L 39.78125 0 L 28.015625 0 L 28.015625 -3.59375 C 26.585938 -2.070312 24.859375 -0.921875 22.828125 -0.140625 C 20.796875 0.640625 18.675781 1.03125 16.46875 1.03125 Z M 16.46875 1.03125 " />
-        </g>
-      </g>
-    </g>
-    <g fill="#000000" fill-opacity="1">
-      <g transform="translate(380.974238, 60.374994)">
-        <g>
-          <path d="M 17.5 1.03125 C 13.394531 1.03125 10.289062 -0.109375 8.1875 -2.390625 C 6.09375 -4.671875 5.046875 -7.796875 5.046875 -11.765625 L 5.046875 -24.765625 L 0.34375 -24.765625 L 0.34375 -33.203125 L 5.046875 -33.203125 L 5.046875 -43.171875 L 17.234375 -43.171875 L 17.234375 -33.203125 L 24.84375 -33.203125 L 24.84375 -24.765625 L 17.234375 -24.765625 L 17.234375 -13.421875 C 17.234375 -11.617188 17.566406 -10.328125 18.234375 -9.546875 C 18.898438 -8.765625 20.085938 -8.375 21.796875 -8.375 C 23.316406 -8.375 24.835938 -8.785156 26.359375 -9.609375 L 26.359375 -0.546875 C 25.160156 0.00390625 23.878906 0.40625 22.515625 0.65625 C 21.160156 0.90625 19.488281 1.03125 17.5 1.03125 Z M 17.5 1.03125 " />
-        </g>
-      </g>
-    </g>
-    <g fill="#000000" fill-opacity="1">
-      <g transform="translate(407.680638, 60.374994)">
-        <g>
-          <path d="M 22.625 1.03125 C 16.125 1.03125 11.015625 -0.488281 7.296875 -3.53125 C 3.585938 -6.570312 1.734375 -10.882812 1.734375 -16.46875 C 1.734375 -21.957031 3.378906 -26.289062 6.671875 -29.46875 C 9.972656 -32.65625 14.738281 -34.25 20.96875 -34.25 C 24.925781 -34.25 28.320312 -33.5 31.15625 -32 C 34 -30.5 36.144531 -28.445312 37.59375 -25.84375 C 39.050781 -23.238281 39.78125 -20.296875 39.78125 -17.015625 L 39.78125 -12.515625 L 13.28125 -12.515625 C 13.738281 -10.671875 14.890625 -9.332031 16.734375 -8.5 C 18.585938 -7.675781 21.101562 -7.265625 24.28125 -7.265625 C 26.445312 -7.265625 28.671875 -7.445312 30.953125 -7.8125 C 33.242188 -8.1875 35.21875 -8.695312 36.875 -9.34375 L 36.875 -1.3125 C 35.164062 -0.625 33.03125 -0.0625 30.46875 0.375 C 27.914062 0.8125 25.300781 1.03125 22.625 1.03125 Z M 28.296875 -20.140625 C 28.109375 -21.929688 27.367188 -23.332031 26.078125 -24.34375 C 24.785156 -25.363281 23.007812 -25.875 20.75 -25.875 C 18.539062 -25.875 16.789062 -25.351562 15.5 -24.3125 C 14.207031 -23.28125 13.46875 -21.890625 13.28125 -20.140625 Z M 28.296875 -20.140625 " />
-        </g>
-      </g>
-    </g>
-    <g fill="#000000" fill-opacity="1">
-      <g transform="translate(159.199331, 60.374994)">
-        <g>
-          <path d="M 3.109375 -48.359375 L 15.21875 -48.359375 L 33 -19.578125 L 33 -48.359375 L 45.25 -48.359375 L 45.25 0 L 33.203125 0 L 15.359375 -28.84375 L 15.359375 0 L 3.109375 0 Z M 3.109375 -48.359375 " />
-        </g>
-      </g>
-    </g>
-  </svg>
-);
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -209,179 +112,185 @@ export default function RootLayout({
   return (
     <html lang="en" className={geistSans.className} suppressHydrationWarning>
       <body className="bg-background text-foreground">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <main className="min-h-screen flex flex-col">
-            <div className="flex-1 w-full flex flex-col">
-              <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16 bg-white dark:bg-gray-900">
-                <div className="w-full max-w-7xl flex justify-between items-center p-3 px-5 text-sm">
-                  <div className="flex gap-5 items-center font-semibold">
-                    <Link href={"/"} className="flex items-center gap-2">
-                      <Logo />
-                    </Link>
-                    <div className="hidden md:flex gap-6 ml-10">
-                      <Link
-                        href="/templates"
-                        className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium"
-                      >
-                        Templates
+        <PaypalProviderClient>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <main className="min-h-screen flex flex-col">
+              <div className="flex-1 w-full flex flex-col">
+                <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16 bg-white dark:bg-gray-900">
+                  <div className="w-full max-w-7xl flex justify-between items-center p-3 px-5 text-sm">
+                    <div className="flex gap-5 items-center font-semibold">
+                      <Link href={"/"} className="flex items-center gap-2">
+                        <Logo />
                       </Link>
-                      <Link
-                        href="/features"
-                        className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium"
-                      >
-                        Features
-                      </Link>
-                      <Link
-                        href="/pricing"
-                        className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium"
-                      >
-                        Pricing
-                      </Link>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="hidden md:block">
-                      <AuthButton />
-                    </div>
-                    {!hasEnvVars ? <EnvVarWarning /> : null}
-                    <ThemeSwitcher />
-                  </div>
-                </div>
-              </nav>
-
-              {children}
-
-              <footer className="bg-gray-900 text-white py-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                    <div>
-                      <h3 className="text-lg font-semibold mb-4">Product</h3>
-                      <ul className="space-y-2">
-                        <li>
-                          <Link
-                            href="/features"
-                            className="text-gray-400 hover:text-white"
-                          >
-                            Features
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            href="/pricing"
-                            className="text-gray-400 hover:text-white"
-                          >
-                            Pricing
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            href="/templates"
-                            className="text-gray-400 hover:text-white"
-                          >
-                            Templates
-                          </Link>
-                        </li>
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h3 className="text-lg font-semibold mb-4">Resources</h3>
-                      <ul className="space-y-2">
-                        <li>
-                          <Link
-                            href="/blog"
-                            className="text-gray-400 hover:text-white"
-                          >
-                            Blog
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            href="/guides"
-                            className="text-gray-400 hover:text-white"
-                          >
-                            Guides
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            href="/faq"
-                            className="text-gray-400 hover:text-white"
-                          >
-                            FAQ
-                          </Link>
-                        </li>
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h3 className="text-lg font-semibold mb-4">Company</h3>
-                      <ul className="space-y-2">
-                        <li>
-                          <Link
-                            href="/about"
-                            className="text-gray-400 hover:text-white"
-                          >
-                            About Us
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            href="/contact"
-                            className="text-gray-400 hover:text-white"
-                          >
-                            Contact
-                          </Link>
-                        </li>
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h3 className="text-lg font-semibold mb-4">Legal</h3>
-                      <ul className="space-y-2">
-                        <li>
-                          <Link
-                            href="/privacy"
-                            className="text-gray-400 hover:text-white"
-                          >
-                            Privacy Policy
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            href="/terms"
-                            className="text-gray-400 hover:text-white"
-                          >
-                            Terms of Service
-                          </Link>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-
-                  <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
-                    <div className="flex items-center gap-2 mb-4 md:mb-0">
-                      <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                        <span className="text-white font-bold text-sm">CV</span>
+                      <div className="hidden md:flex gap-6 ml-10">
+                        <Link
+                          href="/templates"
+                          className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium"
+                        >
+                          Templates
+                        </Link>
+                        <Link
+                          href="/features"
+                          className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium"
+                        >
+                          Features
+                        </Link>
+                        <Link
+                          href="/pricing"
+                          className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium"
+                        >
+                          Pricing
+                        </Link>
                       </div>
-                      <span className="text-lg font-bold">CvInMinute</span>
                     </div>
-
-                    <div className="text-gray-400 text-sm">
-                      © {new Date().getFullYear()} CvInMinute. All rights
-                      reserved.
+                    <div className="flex items-center gap-4">
+                      <div className="hidden md:block">
+                        <AuthButton />
+                      </div>
+                      {!hasEnvVars ? <EnvVarWarning /> : null}
+                      <ThemeSwitcher />
                     </div>
                   </div>
-                </div>
-              </footer>
-            </div>
-          </main>
-        </ThemeProvider>
+                </nav>
+
+                {children}
+
+                <footer className="bg-gray-900 text-white py-12">
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">Product</h3>
+                        <ul className="space-y-2">
+                          <li>
+                            <Link
+                              href="/features"
+                              className="text-gray-400 hover:text-white"
+                            >
+                              Features
+                            </Link>
+                          </li>
+                          <li>
+                            <Link
+                              href="/pricing"
+                              className="text-gray-400 hover:text-white"
+                            >
+                              Pricing
+                            </Link>
+                          </li>
+                          <li>
+                            <Link
+                              href="/templates"
+                              className="text-gray-400 hover:text-white"
+                            >
+                              Templates
+                            </Link>
+                          </li>
+                        </ul>
+                      </div>
+
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">
+                          Resources
+                        </h3>
+                        <ul className="space-y-2">
+                          <li>
+                            <Link
+                              href="/blog"
+                              className="text-gray-400 hover:text-white"
+                            >
+                              Blog
+                            </Link>
+                          </li>
+                          <li>
+                            <Link
+                              href="/guides"
+                              className="text-gray-400 hover:text-white"
+                            >
+                              Guides
+                            </Link>
+                          </li>
+                          <li>
+                            <Link
+                              href="/faq"
+                              className="text-gray-400 hover:text-white"
+                            >
+                              FAQ
+                            </Link>
+                          </li>
+                        </ul>
+                      </div>
+
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">Company</h3>
+                        <ul className="space-y-2">
+                          <li>
+                            <Link
+                              href="/about"
+                              className="text-gray-400 hover:text-white"
+                            >
+                              About Us
+                            </Link>
+                          </li>
+                          <li>
+                            <Link
+                              href="/contact"
+                              className="text-gray-400 hover:text-white"
+                            >
+                              Contact
+                            </Link>
+                          </li>
+                        </ul>
+                      </div>
+
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">Legal</h3>
+                        <ul className="space-y-2">
+                          <li>
+                            <Link
+                              href="/privacy"
+                              className="text-gray-400 hover:text-white"
+                            >
+                              Privacy Policy
+                            </Link>
+                          </li>
+                          <li>
+                            <Link
+                              href="/terms"
+                              className="text-gray-400 hover:text-white"
+                            >
+                              Terms of Service
+                            </Link>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
+                      <div className="flex items-center gap-2 mb-4 md:mb-0">
+                        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                          <span className="text-white font-bold text-sm">
+                            CV
+                          </span>
+                        </div>
+                        <span className="text-lg font-bold">CvInMinute</span>
+                      </div>
+
+                      <div className="text-gray-400 text-sm">
+                        © {new Date().getFullYear()} CvInMinute. All rights
+                        reserved.
+                      </div>
+                    </div>
+                  </div>
+                </footer>
+              </div>
+            </main>
+          </ThemeProvider>
+        </PaypalProviderClient>
       </body>
     </html>
   );

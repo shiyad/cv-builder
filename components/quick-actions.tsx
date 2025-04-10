@@ -45,7 +45,7 @@ export function QuickActions() {
           <ArrowRight className="h-4 w-4 text-gray-400" />
         </Link>
         <Link
-          href="/upgrade"
+          href="/protected/account/subscription"
           className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors"
         >
           <div className="flex items-center">

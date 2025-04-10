@@ -14,6 +14,7 @@ import { createClient } from "@/utils/supabase/client";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import { Document, Packer, Paragraph, TextRun } from "docx";
+import { useRouter } from "next/navigation";
 
 export function DownloadButton({
   cv,
@@ -25,13 +26,52 @@ export function DownloadButton({
     cv_data: any;
   };
   template: {
-    id: string;
+    id?: string;
     template_config: any;
+    is_premium?: boolean;
   };
 }) {
   const supabase = createClient();
+  const router = useRouter();
+
+  const checkPremiumAccess = async () => {
+    // Get current user
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !user) {
+      toast.error("Please sign in to download");
+      router.push("/login");
+      return false;
+    }
+
+    // Check if template is premium
+    if (template.is_premium) {
+      // Check if user has active premium subscription
+      const { data: subscription, error: subError } = await supabase
+        .from("user_subscriptions")
+        .select("status")
+        .eq("user_id", user.id)
+        .eq("status", "active")
+        .single();
+
+      if (subError || !subscription) {
+        toast.error("Premium template requires a subscription");
+        router.push(
+          "/protected/account/subscription?message=Premium%20template%20requires%20a%20subscription"
+        );
+        return false;
+      }
+    }
+
+    return true;
+  };
 
   const generatePDF = async () => {
+    const hasAccess = await checkPremiumAccess();
+    if (!hasAccess) return;
+
     const element = document.getElementById("cv-preview");
     if (!element) throw new Error("Preview element not found");
 
@@ -99,14 +139,27 @@ export function DownloadButton({
   };
 
   const generatePDFWithPuppeteer = async (): Promise<Blob> => {
+    const hasAccess = await checkPremiumAccess();
+    if (!hasAccess) {
+      // Return an empty Blob if no access (though the redirect will happen in checkPremiumAccess)
+      return new Blob();
+    }
+
     const element = document.getElementById("cv-preview");
     if (!element) throw new Error("Preview not found");
 
     // Clone the element to modify for PDF
     const clone = element.cloneNode(true) as HTMLElement;
-    clone.style.width = "794px";
+    clone.style.width = "794px"; // A4 width in pixels (210mm ≈ 794px at 96dpi)
     clone.style.padding = "0";
     clone.style.margin = "0";
+
+    // Special handling for images in the clone
+    const images = clone.querySelectorAll("img");
+    images.forEach((img) => {
+      img.style.maxWidth = "100%";
+      img.style.height = "auto";
+    });
 
     const html = clone.outerHTML;
     document.body.appendChild(clone);
@@ -122,14 +175,24 @@ export function DownloadButton({
             format: "A4",
             margin: "0mm",
             printBackground: true,
+            preferCSSPageSize: true,
           },
         }),
       });
 
-      if (!res.ok) throw new Error("Failed to generate PDF");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to generate PDF");
+      }
+
       return await res.blob();
+    } catch (error) {
+      console.error("PDF generation error:", error);
+      throw error; // Re-throw to be handled by the calling function
     } finally {
-      document.body.removeChild(clone);
+      if (clone.parentNode) {
+        document.body.removeChild(clone);
+      }
     }
   };
 
@@ -168,44 +231,132 @@ export function DownloadButton({
   };
 
   const handleDownload = async (format: "pdf" | "docx") => {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+    let fileBlob: Blob;
+    let user: any = null;
 
-      // Track download in database
-      const { error } = await supabase.from("downloads").insert({
+    try {
+      // Check authentication
+      const { data, error: authError } = await supabase.auth.getUser();
+      user = data?.user;
+
+      if (authError || !user) {
+        toast.error("Please sign in to download");
+        router.push("/login");
+        return;
+      }
+
+      // Check if template is premium and user has access
+      if (template.is_premium) {
+        const { data: subscription, error: subError } = await supabase
+          .from("user_subscriptions")
+          .select("status, plan_id")
+          .eq("user_id", user.id)
+          .eq("status", "active")
+          .single();
+
+        if (subError || !subscription) {
+          toast.error("Premium template requires an active subscription");
+          router.push(
+            `/protected/account/subscription?redirect=/cv/${cv.id}&template=${template.id}`
+          );
+          return;
+        }
+
+        const { data: plan, error: planError } = await supabase
+          .from("subscription_plans")
+          .select("features")
+          .eq("id", subscription.plan_id)
+          .single();
+
+        const features: string[] = Array.isArray(plan?.features)
+          ? plan.features
+          : [];
+
+        if (planError) {
+          // || !features.includes("premium_templates")
+          toast.error("Your plan doesn't include premium templates");
+          router.push(
+            `/protected/account/subscription?upgrade=true&template=${template.id}`
+          );
+          return;
+        }
+      }
+
+      // Track download in database (optional but useful)
+      const { error: trackError } = await supabase.from("downloads").insert({
         user_id: user.id,
         cv_id: cv.id,
         format,
+        template_id: template.id,
+        is_premium: template.is_premium || false,
       });
 
-      if (error) throw error;
-
-      toast.loading(`Generating ${format.toUpperCase()}...`);
-      let fileBlob: Blob;
-
-      if (format === "pdf") {
-        try {
-          fileBlob = await generatePDFWithPuppeteer();
-        } catch (e) {
-          console.warn("Puppeteer failed, falling back to client-side:", e);
-          fileBlob = await generatePDF();
-        }
-      } else {
-        fileBlob = await generateDOCX();
+      if (trackError) {
+        console.error("Failed to track download:", trackError);
+        // Continue anyway
       }
 
-      const fileName = `${cv.title.replace(/\s+/g, "_")}.${format}`;
-      saveAs(fileBlob, fileName);
+      toast.loading(`Generating ${format.toUpperCase()}...`);
 
+      // Generate file
+      if (format === "pdf") {
+        try {
+          const result = await generatePDFWithPuppeteer();
+          if (!result)
+            throw new Error("PDF generation failed or access denied");
+          fileBlob = result; // Now we are certain `result` is a `Blob`
+        } catch (puppeteerError) {
+          console.warn(
+            "Puppeteer PDF generation failed, falling back:",
+            puppeteerError
+          );
+          const fallbackResult = await generatePDF();
+          if (!fallbackResult) {
+            throw new Error("Fallback PDF generation failed");
+          }
+          fileBlob = fallbackResult; // This is also a `Blob`
+        }
+      } else {
+        const docxResult = await generateDOCX();
+        if (!docxResult) {
+          throw new Error("DOCX generation failed");
+        }
+        fileBlob = docxResult; // This is also a `Blob`
+      }
+
+      const fileName = `${cv.title.replace(/\s+/g, "_")}_${new Date()
+        .toISOString()
+        .slice(0, 10)}.${format}`;
+
+      saveAs(fileBlob, fileName);
       toast.dismiss();
-      toast.success(`Download started!`);
+      toast.success(`${format.toUpperCase()} download started!`);
     } catch (error) {
       toast.dismiss();
-      toast.error(`Failed to generate ${format.toUpperCase()}`);
+
+      if (error instanceof Error) {
+        if (error.message.includes("network")) {
+          toast.error("Network error - please check your connection");
+        } else {
+          toast.error(`Failed to generate ${format.toUpperCase()}`);
+        }
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+
       console.error("Download error:", error);
+
+      // Log error to Supabase
+      await supabase.from("error_logs").insert({
+        user_id: user?.id || null,
+        error_type: "download_failed",
+        details: JSON.stringify({
+          cv_id: cv.id,
+          template_id: template.id,
+          format,
+          error: error instanceof Error ? error.message : String(error),
+        }),
+      });
     }
   };
 

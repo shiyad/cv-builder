@@ -80,7 +80,7 @@ export default async function Signup(props: {
           </form>
         </div>
 
-        <SmtpMessage />
+        {/* <SmtpMessage /> */}
       </div>
     </div>
   );

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Check, Sparkles } from "lucide-react";
 import { Button } from "./ui/button";
+import Link from "next/link";
 
 export default function Pricing() {
   const plans = [
@@ -13,7 +14,7 @@ export default function Pricing() {
       cta: "Get Started",
       popular: false,
       features: [
-        "3 basic templates",
+        "Access basic templates",
         "PDF downloads",
         "Limited customization",
         "Basic formatting",
@@ -27,31 +28,31 @@ export default function Pricing() {
       cta: "Upgrade Now",
       popular: true,
       features: [
-        "50+ professional templates",
-        "PDF, Word & Text downloads",
+        "Access all premium templates",
+        "PDF downloads", // , Word & Text
         "Full customization",
         "ATS optimization",
         "Unlimited resume versions",
-        "Cover letter builder",
+        //"Cover letter builder",
         "Priority support",
       ],
     },
-    {
-      name: "Pro",
-      price: "$19.99",
-      description: "For professionals & career changers",
-      cta: "Get Pro",
-      popular: false,
-      features: [
-        "All Premium features",
-        "100+ premium templates",
-        "LinkedIn profile builder",
-        "Resume review service",
-        "Interview preparation",
-        "Career coaching session",
-        "24/7 VIP support",
-      ],
-    },
+    // {
+    //   name: "Pro",
+    //   price: "$19.99",
+    //   description: "For professionals & career changers",
+    //   cta: "Get Pro",
+    //   popular: false,
+    //   features: [
+    //     "All Premium features",
+    //     "100+ premium templates",
+    //     "LinkedIn profile builder",
+    //     "Resume review service",
+    //     "Interview preparation",
+    //     "Career coaching session",
+    //     "24/7 VIP support",
+    //   ],
+    // },
   ];
 
   return (
@@ -75,7 +76,7 @@ export default function Pricing() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 gap-8">
           {plans.map((plan, index) => (
             <motion.div
               key={index}
@@ -109,13 +110,14 @@ export default function Pricing() {
                   )}
                 </div>
                 <Button
+                  asChild
                   className={`w-full py-4 text-lg ${
                     plan.popular
                       ? "bg-blue-600 hover:bg-blue-700"
                       : "bg-gray-900 hover:bg-gray-800"
                   }`}
                 >
-                  {plan.cta}
+                  <Link href="/protected/account/subscription">{plan.cta}</Link>
                 </Button>
               </div>
               <div className="border-t border-gray-200 px-8 py-6 bg-gray-50">
