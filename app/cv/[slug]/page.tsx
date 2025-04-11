@@ -3,7 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 import { notFound, redirect } from "next/navigation";
 import { headers } from "next/headers";
 
-export default async function SharedCVPage(ctx: { params: { slug: string } }) {
+export default async function SharedCVPage(ctx: { params: Promise<{ slug: string }> }) {
   const { params } = ctx; // ✅ Step 1: awaitable context wrapper
   const { slug } = await params; // ✅ Step 2: await before destructuring
 

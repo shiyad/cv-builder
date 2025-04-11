@@ -42,7 +42,7 @@ export function DownloadButton({
     } = await supabase.auth.getUser();
     if (authError || !user) {
       toast.error("Please sign in to download");
-      router.push("/login");
+      router.push("/sign-in");
       return false;
     }
 
@@ -241,7 +241,7 @@ export function DownloadButton({
 
       if (authError || !user) {
         toast.error("Please sign in to download");
-        router.push("/login");
+        router.push("/sign-in");
         return;
       }
 

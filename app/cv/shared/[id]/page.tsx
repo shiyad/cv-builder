@@ -90,7 +90,7 @@ type FormData = {
   is_public?: boolean;
 };
 
-interface CVTemplatesPageProps {
+interface TemplatesPageProps {
   initialData?: {
     id?: string;
     title: string;
@@ -128,12 +128,8 @@ interface CVData {
   is_public: boolean;
 }
 
-export default function CVViewerPage({
-  initialData,
-  onCancel,
-}: CVTemplatesPageProps) {
-  const params = useParams();
-  const { slug } = params;
+export default function Page() {
+  const params = useParams<{ id: string }>();
   const supabase = createClient();
   const [cvData, setCvData] = useState<CVData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -143,7 +139,7 @@ export default function CVViewerPage({
   const [selectedTemplateConfig, setSelectedTemplateConfig] =
     useState<any>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<Template>();
-  const [form, setForm] = useState<FormData>(initialData?.cv_data || {});
+  const [form, setForm] = useState<FormData>({});
 
   const router = useRouter();
 
@@ -341,7 +337,7 @@ export default function CVViewerPage({
           transition={{ delay: 0.4 }}
           className="max-w-6xl w-full mx-auto px-6"
         >
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+          <div className="bg-white rounded-xl py-8 shadow-lg overflow-hidden border border-gray-200">
             {renderPreview()}
           </div>
         </motion.div>

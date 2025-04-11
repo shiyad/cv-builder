@@ -81,9 +81,9 @@ export default function TemplatesShowcase() {
                     {template.name}
                   </h3>
                   <p className="text-gray-200">{template.category}</p>
-                  <Button className="mt-4 w-full" variant="outline">
+                  {/* <Button className="mt-4 w-full" variant="outline">
                     Use This Template
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             </motion.div>
