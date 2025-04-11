@@ -13,6 +13,7 @@ import PaypalProviderClient from "@/components/PaypalProviderClient";
 import LogoBlackBg from "@/components/logo-black-bg";
 import { Analytics } from "@vercel/analytics/react";
 import { Header } from "@/components/header";
+import { Toaster } from "react-hot-toast";
 
 const defaultUrl = process.env.NEXT_PUBLIC_SITE_URL
   ? `https://${process.env.NEXT_PUBLIC_SITE_URL}`
@@ -48,7 +49,7 @@ export default function RootLayout({
             <main className="min-h-screen flex flex-col">
               <div className="flex-1 w-full flex flex-col">
                 <Header />
-
+                <Toaster position="top-right" />
                 {children}
                 <Analytics />
 

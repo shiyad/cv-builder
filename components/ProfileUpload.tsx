@@ -43,8 +43,6 @@ export const ProfileUpload = ({
         .from("cv-profile-pictures")
         .upload(filePath, file);
 
-      debugger;
-
       if (error) throw error;
 
       // Get public URL

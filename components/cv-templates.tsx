@@ -72,6 +72,8 @@ import { MechanicalEngineerTemplate } from "./templates/MechanicalEngineerTempla
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { CVLinkManager } from "./cv-link-manager";
+import toast from "react-hot-toast";
 
 // Template and color configurations
 const templates = [
@@ -570,26 +572,57 @@ export default function CVTemplatesPage({
   const saveCV = useCallback(
     async (isNew: boolean = false) => {
       setIsLoading(true);
+      let toastId: string | undefined;
+      toastId = toast.loading(
+        isNew ? "Creating new CV..." : "Saving changes..."
+      );
+
       try {
+        // 1. Authentication Check
         const {
           data: { user },
+          error: authError,
         } = await supabase.auth.getUser();
-        if (!user) throw new Error("Not authenticated");
+        if (authError || !user) {
+          toast.error("Session expired. Please sign in again.", {
+            id: toastId,
+          });
+          throw new Error("Session expired. Please sign in again.");
+        }
 
-        debugger;
+        // 2. Template Validation
+        if (!selectedTemplate?.id) {
+          toast.error("Please select a template before saving.", {
+            id: toastId,
+          });
+          throw new Error("Please select a template before saving.");
+        }
 
         // Get the full template data
-        const template = templates.find((t) => t.id === selectedTemplate?.id);
-        if (!template) throw new Error("Template not found");
+        const template = templates.find((t) => t.id === selectedTemplate.id);
+        if (!template) {
+          toast.error("Selected template not found.", { id: toastId });
+          throw new Error("Selected template not found.");
+        }
 
+        // 3. Data Validation
+        if (!cvTitle.trim()) {
+          toast.error("CV title cannot be empty.", { id: toastId });
+          throw new Error("CV title cannot be empty.");
+        }
+
+        // 4. Prepare CV Data
         const cvData = {
-          title: cvTitle,
+          title: cvTitle.trim(),
           cv_data: form,
-          template_id: selectedTemplate?.id,
-          template_config: template.template_config, // Save the full config
+          template_id: selectedTemplate.id,
+          template_config: template.template_config,
           is_public: form.is_public || false,
+          updated_at: new Date().toISOString(),
         };
 
+        debugger;
+        // 5. Save Operation
         let result;
         if (isNew || !cvId) {
           result = await supabase
@@ -598,34 +631,71 @@ export default function CVTemplatesPage({
               ...cvData,
               user_id: user.id,
               slug: `cv-${Date.now()}`,
+              created_at: new Date().toISOString(),
             })
             .select()
             .single();
         } else {
+          console.log("Trying to update CV", { cvId, userId: user.id, cvData });
           result = await supabase
             .from("user_cvs")
             .update(cvData)
             .eq("id", cvId)
             .eq("user_id", user.id)
             .select()
-            .single();
+            .maybeSingle();
         }
 
-        debugger;
+        // 6. Handle Result
+        if (result.error) {
+          toast.error(result.error.message || "Failed to save CV.", {
+            id: toastId,
+          });
+          throw result.error;
+        }
 
-        if (result.error) throw result.error;
         if (result.data) {
           setCvId(result.data.id);
+          toast.success(
+            isNew ? "CV created successfully!" : "CV saved successfully!",
+            { id: toastId }
+          );
+
+          // Additional success actions
+          if (isNew) {
+            router.push(`/protected/cv-builder/${result.data.id}`);
+          }
+
           return result.data;
         }
-      } catch (error) {
-        console.error("Error saving CV:", error);
-        throw error;
+
+        toast.error("No data returned from save operation.", { id: toastId });
+        throw new Error("No data returned from save operation.");
+      } catch (error: any) {
+        console.error("CV Save Error:", error);
+
+        // Only show additional toast if not already shown
+        if (
+          !error.message?.includes("Please select") &&
+          !error.message?.includes("Session expired") &&
+          !error.message?.includes("CV title") &&
+          !error.message?.includes("Selected template")
+        ) {
+          toast.error(error.message || "Failed to save CV.", { id: toastId });
+        }
+
+        // Special handling for specific error codes
+        if (error.code === "42501") {
+          // RLS violation
+          toast("Please refresh your session", { icon: "🔄" });
+        }
+
+        throw error; // Re-throw for calling function if needed
       } finally {
         setIsLoading(false);
       }
     },
-    [form, selectedTemplate, cvTitle, cvId, templates]
+    [form, selectedTemplate, cvTitle, cvId, templates, router]
   );
 
   const deleteCV = async () => {
@@ -1304,20 +1374,25 @@ export default function CVTemplatesPage({
       {/* Preview Header */}
       <div className="flex justify-between items-center px-4 py-2 border-b bg-white dark:bg-gray-800 sticky top-0 z-10 print:hidden">
         <div className="text-sm text-muted-foreground">Preview Mode</div>
-        {cvId && cvTitle && (
-          <DownloadButton
-            cv={{
-              id: cvId,
-              title: cvTitle,
-              cv_data: form,
-            }}
-            template={{
-              id: selectedTemplate?.id,
-              template_config: selectedTemplateConfig,
-              is_premium: selectedTemplate?.is_premium,
-            }}
-          />
-        )}
+        <div className="flex items-center gap-2">
+          {selectedTemplate !== undefined && (
+            <CVLinkManager cvId={selectedTemplate.id} />
+          )}
+          {cvId && cvTitle && (
+            <DownloadButton
+              cv={{
+                id: cvId,
+                title: cvTitle,
+                cv_data: form,
+              }}
+              template={{
+                id: selectedTemplate?.id,
+                template_config: selectedTemplateConfig,
+                is_premium: selectedTemplate?.is_premium,
+              }}
+            />
+          )}
+        </div>
       </div>
 
       {/* CV Preview Content */}

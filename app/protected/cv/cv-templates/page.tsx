@@ -501,8 +501,6 @@ export default function CVTemplatesPage() {
           .single();
       }
 
-      debugger;
-
       if (result.error) throw result.error;
       if (result.data) {
         setCvId(result.data.id);

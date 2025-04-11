@@ -94,8 +94,6 @@ export function NewCVForm({
         .select()
         .single();
 
-      debugger;
-
       if (createError) throw createError;
       if (!newCV) throw new Error("Failed to create CV");
 

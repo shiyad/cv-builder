@@ -8,6 +8,7 @@ import { Tables } from "@/types/supabase/types";
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import { CryptoButtons } from "./CryptoButtons"; // We'll create this component
 import { CryptoPayment } from "./CryptoPayment";
+import { upgradeToPremium } from "@/actions/upgrade-to-premium";
 
 export default function SubscriptionTable() {
   const supabase = createClient();
@@ -115,6 +116,8 @@ export default function SubscriptionTable() {
 
     setSubscription(newSubscription);
 
+    upgradeToPremium(user.id);
+
     // Log activity
     await supabase.from("activity_log").insert([
       {
@@ -136,8 +139,6 @@ export default function SubscriptionTable() {
       setUpdating(true);
 
       if (!selectedPlan) throw new Error("No plan selected");
-
-      debugger;
 
       const subscription = await createSubscriptionRecord(
         selectedPlan,
