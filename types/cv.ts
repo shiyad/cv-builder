@@ -58,6 +58,13 @@ export interface AchievementItem {
   date?: string;
 }
 
+export interface ReferenceItem {
+  name?: string;
+  company?: string;
+  contact?: string;
+  position?: string;
+}
+
 export interface CVFormData {
   contact_information?: ContactInformation;
   objective?: {
@@ -70,6 +77,7 @@ export interface CVFormData {
   publications?: PublicationItem[];
   certifications?: CertificationItem[];
   achievements?: AchievementItem[];
+  references?: ReferenceItem[];
   is_public?: boolean;
 }
 

@@ -233,7 +233,7 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              <div className="flex items-start gap-4">
+              {/* <div className="flex items-start gap-4">
                 <div className="bg-blue-100 dark:bg-blue-900/50 p-3 rounded-full">
                   <Phone className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
@@ -250,9 +250,9 @@ export default function ContactPage() {
                     </Link>
                   </p>
                 </div>
-              </div>
+              </div> */}
 
-              <div className="flex items-start gap-4">
+              {/* <div className="flex items-start gap-4">
                 <div className="bg-blue-100 dark:bg-blue-900/50 p-3 rounded-full">
                   <MapPin className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
@@ -266,7 +266,7 @@ export default function ContactPage() {
                     Akkaraipattu, Sri Lanka
                   </p>
                 </div>
-              </div>
+              </div> */}
 
               <div className="flex items-start gap-4">
                 <div className="bg-blue-100 dark:bg-blue-900/50 p-3 rounded-full">

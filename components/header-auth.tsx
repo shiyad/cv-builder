@@ -1,36 +1,73 @@
-import { signOutAction } from "@/app/actions";
-import { hasEnvVars } from "@/utils/supabase/check-env-vars";
+// components/auth-button.tsx
+"use client";
+
+import { useEffect, useState } from "react";
+import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { createClient } from "@/utils/supabase/server";
+import { hasEnvVars } from "@/utils/supabase/check-env-vars";
+import { User } from "@supabase/supabase-js";
+import { useRouter } from "next/navigation";
 
-export default async function AuthButton() {
-  const supabase = await createClient();
+export default function AuthButton() {
+  const supabase = createClient();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  useEffect(() => {
+    // Check existing session and set up listener
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      // Directly set user to the session user if logged in or null if logged out
+      setUser(session?.user ?? null);
+      setLoading(false);
+
+      // Refresh server components when auth changes
+      if (event === "SIGNED_IN" || event === "SIGNED_OUT") {
+        // Re-render UI by updating state
+        setLoading(false); // Ensure loading is false to show correct UI
+      }
+    });
+
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [router]);
 
   if (!hasEnvVars) {
     return (
       <div className="flex gap-4 items-center">
-        <div>
-          <div className="text-sm text-red-500 font-medium">
-            Configuration required: Please update .env.local file
-          </div>
+        <div className="text-sm text-red-500 font-medium">
+          Configuration required: Please update .env.local file
         </div>
       </div>
     );
   }
 
+  if (loading) {
+    return <div className="h-10 w-24 animate-pulse bg-gray-200 rounded" />;
+  }
+
   return user ? (
     <div className="flex items-center gap-4">
       <span className="hidden sm:inline">Welcome, {user.email}</span>
-      <form action={signOutAction}>
-        <Button type="submit" variant={"outline"} className="px-4 py-2">
-          Sign out
-        </Button>
-      </form>
+      <Button
+        variant="outline"
+        className="px-4 py-2"
+        onClick={async () => {
+          await supabase.auth.signOut();
+          setUser(null); // Ensure state is updated immediately
+          router.refresh();
+        }}
+      >
+        Sign out
+      </Button>
     </div>
   ) : (
     <div className="flex gap-2">

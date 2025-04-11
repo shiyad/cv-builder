@@ -31,6 +31,13 @@ import {
   Trash2,
   Save,
   Check,
+  Languages,
+  Book,
+  ShieldCheck,
+  Asterisk,
+  Menu,
+  X,
+  Star,
 } from "lucide-react";
 import clsx from "clsx";
 import { createClient } from "@/utils/supabase/client";
@@ -61,6 +68,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@radix-ui/react-tooltip";
+import { MechanicalEngineerTemplate } from "./templates/MechanicalEngineerTemplate";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Template and color configurations
 const templates = [
@@ -72,10 +83,14 @@ const iconMap: Record<string, JSX.Element> = {
   contact: <Contact className="w-4 h-4" />,
   briefcase: <Briefcase className="w-4 h-4" />,
   target: <FileText className="w-4 h-4" />,
-  graduation: <Palette className="w-4 h-4" />,
-  wrench: <LayoutTemplate className="w-4 h-4" />,
-  language: <User className="w-4 h-4" />,
-  users: <User className="w-4 h-4" />,
+  // graduation: <Palette className="w-4 h-4" />,
+  skill: <LayoutTemplate className="w-4 h-4" />,
+  language: <Languages className="w-4 h-4" />,
+  // users: <User className="w-4 h-4" />,
+  education: <GraduationCap className="w-4 h-4" />,
+  publication: <Book className="w-4 h-4" />,
+  certification: <ShieldCheck className="w-4 h-4" />,
+  reference: <Asterisk className="w-4 h-4" />,
 };
 
 type Section = {
@@ -245,6 +260,10 @@ export default function CVTemplatesPage({
     }
   );
 
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [mobileView, setMobileView] = useState<"editor" | "preview">("editor");
+
   const [selectedColor, setSelectedColor] = useState("blue");
   const [selectedTemplate, setSelectedTemplate] = useState<Template>(); // useState("template1");
   const [activeSection, setActiveSection] = useState<string | null>(null);
@@ -387,7 +406,7 @@ export default function CVTemplatesPage({
               },
             },
           },
-          ui_config: { icon: "graduation-cap", order: 4 },
+          ui_config: { icon: "education", order: 4 },
         },
         {
           id: "skills",
@@ -407,7 +426,7 @@ export default function CVTemplatesPage({
               },
             },
           },
-          ui_config: { icon: "wrench", order: 5 },
+          ui_config: { icon: "skill", order: 5 },
         },
         {
           id: "languages",
@@ -450,7 +469,7 @@ export default function CVTemplatesPage({
               },
             },
           },
-          ui_config: { icon: "book-open", order: 7 },
+          ui_config: { icon: "publication", order: 7 },
         },
         {
           id: "certifications",
@@ -473,7 +492,37 @@ export default function CVTemplatesPage({
               },
             },
           },
-          ui_config: { icon: "certificate", order: 8 },
+          ui_config: { icon: "certification", order: 8 },
+        },
+        {
+          id: "references",
+          key: "references",
+          display_name: "References",
+          schema: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                name: {
+                  type: "string",
+                  title: "Name",
+                },
+                company: {
+                  type: "string",
+                  title: "Company",
+                },
+                contact: {
+                  type: "string",
+                  title: "Contact",
+                },
+                position: {
+                  type: "string",
+                  title: "Position",
+                },
+              },
+            },
+          },
+          ui_config: { icon: "reference", order: 8 },
         },
       ];
 
@@ -679,200 +728,6 @@ export default function CVTemplatesPage({
     }
   };
 
-  // const renderFormFields = (section: Section) => {
-  //   const isArray = section.schema?.type === "array";
-  //   const properties = isArray
-  //     ? section.schema.items?.properties
-  //     : section.schema?.properties;
-
-  //   if (!properties) return null;
-
-  //   if (isArray) {
-  //     const items = form[section.key as keyof FormData] || [];
-  //     if (!Array.isArray(items)) return null;
-
-  //     return (
-  //       <div className="space-y-6">
-  //         <div className="mt-6 space-y-3">
-  //           <Input
-  //             value={cvTitle}
-  //             onChange={(e) => setCvTitle(e.target.value)}
-  //             placeholder="CV Title"
-  //           />
-  //           <div className="flex items-center space-x-2">
-  //             <Switch
-  //               id="public-toggle"
-  //               checked={form.is_public || false}
-  //               onCheckedChange={(checked: any) =>
-  //                 setForm((prev) => ({ ...prev, is_public: checked }))
-  //               }
-  //             />
-  //             <Label htmlFor="public-toggle">
-  //               {form.is_public ? (
-  //                 <span className="flex items-center gap-1">
-  //                   <Eye className="w-4 h-4" /> Public
-  //                 </span>
-  //               ) : (
-  //                 <span className="flex items-center gap-1">
-  //                   <EyeOff className="w-4 h-4" /> Private
-  //                 </span>
-  //               )}
-  //             </Label>
-  //           </div>
-  //           <div className="flex gap-2">
-  //             <Button
-  //               onClick={() => saveCV(false)}
-  //               disabled={isLoading}
-  //               className="flex-1"
-  //             >
-  //               {isLoading ? "Saving..." : "Save CV"}
-  //             </Button>
-  //             <Button
-  //               onClick={() => saveCV(true)}
-  //               disabled={isLoading}
-  //               variant="outline"
-  //             >
-  //               Save As New
-  //             </Button>
-  //           </div>
-  //           {cvId && (
-  //             <Button
-  //               onClick={deleteCV}
-  //               disabled={isLoading}
-  //               variant="destructive"
-  //               className="w-full"
-  //             >
-  //               {isLoading ? "Deleting..." : "Delete CV"}
-  //             </Button>
-  //           )}
-  //         </div>
-  //         {items.map((item: any, index: number) => (
-  //           <div
-  //             key={index}
-  //             className="border p-4 rounded-md space-y-3 relative"
-  //           >
-  //             {Object.entries(properties).map(
-  //               ([fieldKey, config]: [string, any]) => (
-  //                 <div key={fieldKey}>
-  //                   <Label>{config.title || fieldKey}</Label>
-  //                   {config.enum ? (
-  //                     <select
-  //                       className="w-full border rounded px-3 py-2"
-  //                       value={item?.[fieldKey] || ""}
-  //                       onChange={(e) =>
-  //                         handleInputChange(
-  //                           section.key as keyof FormData,
-  //                           fieldKey,
-  //                           e.target.value,
-  //                           index
-  //                         )
-  //                       }
-  //                     >
-  //                       <option value="">Select</option>
-  //                       {config.enum.map((option: string) => (
-  //                         <option key={option} value={option}>
-  //                           {option}
-  //                         </option>
-  //                       ))}
-  //                     </select>
-  //                   ) : (
-  //                     <Input
-  //                       type={config.format === "date" ? "date" : "text"}
-  //                       value={item?.[fieldKey] || ""}
-  //                       placeholder={fieldKey}
-  //                       onChange={(e) =>
-  //                         handleInputChange(
-  //                           section.key as keyof FormData,
-  //                           fieldKey,
-  //                           e.target.value,
-  //                           index
-  //                         )
-  //                       }
-  //                     />
-  //                   )}
-  //                 </div>
-  //               )
-  //             )}
-  //             <Button
-  //               variant="destructive"
-  //               size="sm"
-  //               className="absolute top-2 right-2"
-  //               onClick={() => handleRemoveArrayItem(section.key, index)}
-  //             >
-  //               Remove
-  //             </Button>
-  //           </div>
-  //         ))}
-  //         <Button
-  //           variant="outline"
-  //           onClick={() => handleAddArrayItem(section.key)}
-  //         >
-  //           Add {section.display_name}
-  //         </Button>
-  //       </div>
-  //     );
-  //   }
-
-  //   // Handle non-array sections
-  //   //const sectionData = form[section.key as keyof FormData] || {};
-
-  //   const sectionData = form.contact_information ?? {};
-
-  //   return (
-  //     <div className="space-y-4">
-  //       {section.key === "contact_information" && (
-  //         <div>
-  //           <Label>Profile Picture</Label>
-  //           <ProfileUpload
-  //             currentImage={sectionData.profile_picture}
-  //             onUpload={(url) =>
-  //               handleInputChange("contact_information", "profile_picture", url)
-  //             }
-  //           />
-  //         </div>
-  //       )}
-  //       {Object.entries(properties).map(([key, config]: [string, any]) => (
-  //         <div key={key}>
-  //           <Label>{config.title || key}</Label>
-  //           {config.enum ? (
-  //             <select
-  //               className="w-full border rounded px-3 py-2"
-  //               value={sectionData[key as keyof typeof sectionData] || ""}
-  //               onChange={(e) =>
-  //                 handleInputChange(
-  //                   section.key as keyof FormData,
-  //                   key,
-  //                   e.target.value
-  //                 )
-  //               }
-  //             >
-  //               <option value="">Select</option>
-  //               {config.enum.map((option: string) => (
-  //                 <option key={option} value={option}>
-  //                   {option}
-  //                 </option>
-  //               ))}
-  //             </select>
-  //           ) : (
-  //             <Input
-  //               type={config.format === "email" ? "email" : "text"}
-  //               value={sectionData[key as keyof typeof sectionData] || ""}
-  //               placeholder={key}
-  //               onChange={(e) =>
-  //                 handleInputChange(
-  //                   section.key as keyof FormData,
-  //                   key,
-  //                   e.target.value
-  //                 )
-  //               }
-  //             />
-  //           )}
-  //         </div>
-  //       ))}
-  //     </div>
-  //   );
-  // };
-
   const renderFormFields = (section: Section) => {
     const isArray = section.schema?.type === "array";
     const properties = isArray
@@ -1077,6 +932,8 @@ export default function CVTemplatesPage({
         return <MinimalistTemplate {...templateProps} />;
       case "c6f9158a-93d3-4779-bafb-c3a8d3adc4d3":
         return <ExecutiveModernTemplate {...templateProps} />;
+      case "13ed4517-ac3a-4afb-bd91-708d3c449553":
+        return <MechanicalEngineerTemplate {...templateProps} />;
       case "executive":
         return <ExecutiveTemplate {...templateProps} />;
       default:
@@ -1084,282 +941,387 @@ export default function CVTemplatesPage({
     }
   };
 
-  return (
-    <div className="flex h-screen bg-muted/40">
-      {/* Editor Sidebar */}
-      <div className="w-1/2 border-r overflow-y-auto p-6 bg-background">
-        {leftPanelView === "menu" ? (
-          <>
-            {/* Header Section */}
-            <div className="flex flex-col gap-4 mb-6">
+  const renderMobileHeader = () => (
+    <div className="lg:hidden sticky top-0 z-50 bg-background border-b p-2 flex items-center justify-between">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+      >
+        {mobileSidebarOpen ? (
+          <X className="h-5 w-5" />
+        ) : (
+          <Menu className="h-5 w-5" />
+        )}
+      </Button>
+      <h1 className="text-lg font-semibold">CV Builder</h1>
+      <div className="flex items-center gap-2">
+        <Button
+          variant={mobileView === "editor" ? "default" : "ghost"}
+          size="sm"
+          onClick={() => setMobileView("editor")}
+        >
+          Editor
+        </Button>
+        <Button
+          variant={mobileView === "preview" ? "default" : "ghost"}
+          size="sm"
+          onClick={() => setMobileView("preview")}
+        >
+          Preview
+        </Button>
+      </div>
+    </div>
+  );
+
+  const renderSidebarContent = () => (
+    <>
+      {/* Header Section */}
+      <div className="flex flex-col gap-4 mb-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            CV Customization
+          </h2>
+          <Badge variant="outline" className="px-3 py-1">
+            Draft
+          </Badge>
+        </div>
+
+        {/* Title and Actions Bar */}
+        <div className="flex flex-col sm:flex-row items-center gap-4 bg-muted/50 p-3 rounded-lg">
+          <Input
+            value={cvTitle}
+            onChange={(e) => setCvTitle(e.target.value)}
+            placeholder="CV Title"
+            className="flex-1 min-w-0 w-full sm:w-auto"
+          />
+
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center space-x-1">
+                    <Switch
+                      id="public-toggle"
+                      checked={form.is_public || false}
+                      onCheckedChange={(checked) =>
+                        setForm((prev) => ({
+                          ...prev,
+                          is_public: checked,
+                        }))
+                      }
+                    />
+                    <Label htmlFor="public-toggle" className="cursor-pointer">
+                      {form.is_public ? (
+                        <Eye className="h-4 w-4 text-primary" />
+                      ) : (
+                        <EyeOff className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </Label>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {form.is_public ? "Public CV" : "Private CV"}
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={() => saveCV(false)}
+                    disabled={isLoading}
+                    size="icon"
+                    variant="ghost"
+                    className="h-8 w-8"
+                  >
+                    {isLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Save className="h-4 w-4" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Save CV</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={() => saveCV(true)}
+                    disabled={isLoading}
+                    size="icon"
+                    variant="ghost"
+                    className="h-8 w-8"
+                  >
+                    <SaveAll className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Save As New</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            {cvId && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={deleteCV}
+                      disabled={isLoading}
+                      size="icon"
+                      variant="ghost"
+                      className="h-8 w-8 text-destructive hover:text-destructive"
+                    >
+                      {isLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Delete CV</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <Tabs defaultValue="templates">
+        <TabsList className="grid grid-cols-2 w-full bg-muted/50">
+          <TabsTrigger value="sections" className="flex gap-2 py-2">
+            <FileText className="w-4 h-4" />
+            <span>Sections</span>
+          </TabsTrigger>
+          <TabsTrigger value="templates" className="flex gap-2 py-2">
+            <LayoutTemplate className="w-4 h-4" />
+            <span>Templates</span>
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Sections Panel */}
+        <TabsContent value="sections" className="pt-4">
+          <Card className="border-none shadow-sm">
+            <CardHeader className="px-4 py-3">
+              <CardTitle className="text-base font-medium">
+                CV Sections
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-2 space-y-1">
+              {sections.map((section) => (
+                <div
+                  key={section.id}
+                  onClick={() => {
+                    setActiveSection(section.id);
+                    setLeftPanelView("form");
+                    if (!isDesktop) setMobileSidebarOpen(false);
+                  }}
+                  className={clsx(
+                    "p-3 rounded-md cursor-pointer flex items-center gap-3 transition-colors",
+                    "hover:bg-accent/50",
+                    activeSection === section.id && "bg-accent"
+                  )}
+                >
+                  <div className="w-8 h-8 rounded-full bg-muted/80 flex items-center justify-center p-2 text-muted-foreground">
+                    {section.icon}
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium">
+                      {section.display_name}
+                    </h3>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Templates Panel */}
+        <TabsContent value="templates" className="pt-4">
+          <Card className="border-none shadow-lg rounded-xl">
+            <CardHeader className="px-6 py-4 bg-gradient-to-r from-primary/5 to-muted/10">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                  CV Customization
-                </h2>
-                <Badge variant="outline" className="px-3 py-1">
-                  Draft
+                <CardTitle className="text-xl font-semibold text-primary">
+                  Choose a Template
+                </CardTitle>
+                <Badge
+                  variant="outline"
+                  className="px-3 py-1 text-sm font-medium"
+                >
+                  {templates.length} Templates Available
                 </Badge>
               </div>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {templates.map((template) => (
+                  <div
+                    key={template.id}
+                    className={clsx(
+                      "group relative rounded-xl overflow-hidden h-[280px]",
+                      "border-2 cursor-pointer transition-all duration-300",
+                      "hover:shadow-xl hover:border-primary/40 hover:scale-[1.02]",
+                      "transform-gpu will-change-transform",
+                      selectedTemplate?.id === template.id
+                        ? "ring-4 ring-primary border-primary/70 shadow-lg"
+                        : "border-muted/30"
+                    )}
+                    onClick={() => {
+                      setSelectedTemplate(template);
+                      if (!isDesktop) setMobileSidebarOpen(false);
+                    }}
+                  >
+                    {/* Template Thumbnail */}
+                    <div className="absolute inset-0">
+                      <Image
+                        src={template.thumbnail_url}
+                        alt={template.name}
+                        fill
+                        className="object-cover object-top"
+                        quality={100}
+                        priority={selectedTemplate?.id === template.id}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
+                    </div>
 
-              {/* Title and Actions Bar */}
-              <div className="flex items-center gap-4 bg-muted/50 p-3 rounded-lg">
-                <Input
-                  value={cvTitle}
-                  onChange={(e) => setCvTitle(e.target.value)}
-                  placeholder="CV Title"
-                  className="flex-1 min-w-0"
-                />
+                    {/* Premium Badge */}
+                    {template.is_premium && (
+                      <div className="absolute top-3 right-3">
+                        <Badge className="px-3 py-1 text-xs font-bold bg-gradient-to-r from-amber-500 to-amber-600 shadow-md">
+                          <Star className="w-3 h-3 mr-1" />
+                          Premium
+                        </Badge>
+                      </div>
+                    )}
 
-                <div className="flex items-center gap-2">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="flex items-center space-x-1">
-                          <Switch
-                            id="public-toggle"
-                            checked={form.is_public || false}
-                            onCheckedChange={(checked) =>
-                              setForm((prev) => ({
-                                ...prev,
-                                is_public: checked,
-                              }))
-                            }
-                          />
-                          <Label
-                            htmlFor="public-toggle"
-                            className="cursor-pointer"
-                          >
-                            {form.is_public ? (
-                              <Eye className="h-4 w-4 text-primary" />
-                            ) : (
-                              <EyeOff className="h-4 w-4 text-muted-foreground" />
-                            )}
-                          </Label>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        {form.is_public ? "Public CV" : "Private CV"}
-                      </TooltipContent>
-                    </Tooltip>
-
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          onClick={() => saveCV(false)}
-                          disabled={isLoading}
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8"
-                        >
-                          {isLoading ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Save className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Save CV</TooltipContent>
-                    </Tooltip>
-
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          onClick={() => saveCV(true)}
-                          disabled={isLoading}
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8"
-                        >
-                          <SaveAll className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Save As New</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  {cvId && (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            onClick={deleteCV}
-                            disabled={isLoading}
-                            size="icon"
-                            variant="ghost"
-                            className="h-8 w-8 text-destructive hover:text-destructive"
-                          >
-                            {isLoading ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <Trash2 className="h-4 w-4" />
-                            )}
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Delete CV</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Main Content */}
-            <Tabs defaultValue="sections">
-              <TabsList className="grid grid-cols-2 w-full bg-muted/50">
-                <TabsTrigger value="sections" className="flex gap-2 py-2">
-                  <FileText className="w-4 h-4" />
-                  <span>Sections</span>
-                </TabsTrigger>
-                <TabsTrigger value="templates" className="flex gap-2 py-2">
-                  <LayoutTemplate className="w-4 h-4" />
-                  <span>Templates</span>
-                </TabsTrigger>
-              </TabsList>
-
-              {/* Sections Panel */}
-              <TabsContent value="sections" className="pt-4">
-                <Card className="border-none shadow-sm">
-                  <CardHeader className="px-4 py-3">
-                    <CardTitle className="text-base font-medium">
-                      CV Sections
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-2 space-y-1">
-                    {sections.map((section) => (
-                      <div
-                        key={section.id}
-                        onClick={() => {
-                          setActiveSection(section.id);
-                          setLeftPanelView("form");
-                        }}
-                        className={clsx(
-                          "p-3 rounded-md cursor-pointer flex items-center gap-3 transition-colors",
-                          "hover:bg-accent/50",
-                          activeSection === section.id && "bg-accent"
-                        )}
-                      >
-                        <div className="w-8 h-8 rounded-full bg-muted/80 flex items-center justify-center p-2 text-muted-foreground">
-                          {section.icon}
-                        </div>
-                        <div>
-                          <h3 className="text-sm font-medium">
-                            {section.display_name}
+                    {/* Template Info */}
+                    <div className="relative z-10 h-full flex flex-col justify-end p-5">
+                      <div className="flex flex-col gap-2">
+                        <div className="flex justify-between items-center">
+                          <h3 className="text-white font-bold text-lg drop-shadow-lg">
+                            {template.name}
                           </h3>
+                          {selectedTemplate?.id === template.id && (
+                            <div className="w-7 h-7 flex items-center justify-center bg-primary rounded-full text-white shadow-lg">
+                              <Check className="h-4 w-4" />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Template Features */}
+                        <div className="flex flex-wrap gap-1.5">
+                          <Badge
+                            variant="secondary"
+                            className="text-xs px-2 py-0.5 bg-white/10 text-white/90"
+                          >
+                            {template.template_config?.layout ||
+                              "Single Column"}
+                          </Badge>
+                          <Badge
+                            variant="secondary"
+                            className="text-xs px-2 py-0.5 bg-white/10 text-white/90"
+                          >
+                            {template.template_config?.font || "Modern"}
+                          </Badge>
                         </div>
                       </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              {/* Templates Panel */}
-              <TabsContent value="templates" className="pt-4">
-                <Card className="border-none shadow-sm">
-                  <CardHeader className="px-4 py-3">
-                    <CardTitle className="text-base font-medium">
-                      Templates
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {templates.map((template) => (
-                        <div
-                          key={template.id}
-                          className={clsx(
-                            "group relative rounded-lg overflow-hidden h-[180px]",
-                            "border cursor-pointer transition-all",
-                            "hover:shadow-md hover:border-primary/30",
-                            selectedTemplate?.id === template.id &&
-                              "ring-2 ring-primary border-primary/50"
-                          )}
-                          onClick={() => setSelectedTemplate(template)}
-                        >
-                          <div className="absolute inset-0">
-                            <Image
-                              src={template.thumbnail_url}
-                              alt={template.name}
-                              fill
-                              className="object-cover object-top"
-                              quality={80}
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20" />
-                          </div>
-
-                          {template.is_premium && (
-                            <Badge className="absolute top-2 right-2 bg-amber-500 hover:bg-amber-500/90">
-                              Premium
-                            </Badge>
-                          )}
-
-                          <div className="relative z-10 h-full flex flex-col justify-end p-3">
-                            <div className="flex justify-between items-end">
-                              <h3 className="text-white font-medium drop-shadow-md">
-                                {template.name}
-                              </h3>
-                              {selectedTemplate?.id === template.id && (
-                                <div className="w-5 h-5 flex items-center justify-center bg-primary rounded-full text-white">
-                                  <Check className="h-3 w-3" />
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
                     </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </>
-        ) : (
-          /* Section Editor View */
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setLeftPanelView("menu")}
-                className="h-8 w-8"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-              <h3 className="text-lg font-semibold">Customize Section</h3>
-            </div>
 
-            <Separator />
+                    {/* Hover Overlay */}
+                    <div
+                      className={clsx(
+                        "absolute inset-0 flex items-center justify-center",
+                        "bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity",
+                        "duration-300"
+                      )}
+                    >
+                      {/* <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-white/90 hover:bg-white"
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        Preview Template
+                      </Button> */}
+                    </div>
+                  </div>
+                ))}
+              </div>
 
-            <div className="pt-2">
-              {sections.length && activeSection
-                ? renderFormFields(
-                    sections.find((s) => s.id === activeSection)!
-                  )
-                : null}
-            </div>
-          </div>
+              {/* Categories Filter (optional) */}
+              <div className="mt-8 flex flex-wrap gap-2 justify-center">
+                <Button variant="outline" size="sm" className="rounded-full">
+                  All Templates
+                </Button>
+                <Button variant="ghost" size="sm" className="rounded-full">
+                  Modern
+                </Button>
+                <Button variant="ghost" size="sm" className="rounded-full">
+                  Classic
+                </Button>
+                <Button variant="ghost" size="sm" className="rounded-full">
+                  Creative
+                </Button>
+                <Button variant="ghost" size="sm" className="rounded-full">
+                  Professional
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </>
+  );
+
+  const renderSectionEditor = () => (
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => {
+            setLeftPanelView("menu");
+            if (!isDesktop) setMobileSidebarOpen(true);
+          }}
+          className="h-8 w-8"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <h3 className="text-lg font-semibold">Customize Section</h3>
+      </div>
+
+      <Separator />
+
+      <div className="pt-2">
+        {sections.length && activeSection
+          ? renderFormFields(sections.find((s) => s.id === activeSection)!)
+          : null}
+      </div>
+    </div>
+  );
+
+  const renderPreviewPanel = () => (
+    <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900 print:bg-white print:p-0 print:m-0">
+      {/* Preview Header */}
+      <div className="flex justify-between items-center px-4 py-2 border-b bg-white dark:bg-gray-800 sticky top-0 z-10 print:hidden">
+        <div className="text-sm text-muted-foreground">Preview Mode</div>
+        {cvId && cvTitle && (
+          <DownloadButton
+            cv={{
+              id: cvId,
+              title: cvTitle,
+              cv_data: form,
+            }}
+            template={{
+              id: selectedTemplate?.id,
+              template_config: selectedTemplateConfig,
+              is_premium: selectedTemplate?.is_premium,
+            }}
+          />
         )}
       </div>
 
-      {/* Preview Panel */}
-      <div className="w-1/2 overflow-y-auto flex flex-col bg-gray-50 dark:bg-gray-900 print:bg-white print:p-0 print:m-0">
-        {/* Preview Header */}
-        <div className="flex justify-between items-center px-4 py-2 border-b bg-white dark:bg-gray-800 sticky top-0 z-10 print:hidden">
-          <div className="text-sm text-muted-foreground">Preview Mode</div>
-          {cvId && cvTitle && (
-            <DownloadButton
-              cv={{
-                id: cvId,
-                title: cvTitle,
-                cv_data: form,
-              }}
-              template={{
-                id: selectedTemplate?.id,
-                template_config: selectedTemplateConfig,
-                is_premium: selectedTemplate?.is_premium,
-              }}
-            />
-          )}
-        </div>
-
-        {/* CV Preview Content */}
+      {/* CV Preview Content */}
+      <ScrollArea className="flex-1">
         <div className="flex justify-center print:p-0 print:m-0 p-4 print:block">
           <div
             id="cv-preview-wrapper"
@@ -1368,6 +1330,61 @@ export default function CVTemplatesPage({
             {renderPreview()}
           </div>
         </div>
+      </ScrollArea>
+    </div>
+  );
+
+  if (!isDesktop) {
+    return (
+      <div className="flex flex-col h-screen bg-muted/40">
+        {renderMobileHeader()}
+
+        <div className="flex-1 overflow-hidden relative">
+          {/* Mobile Sidebar Drawer */}
+          <Drawer
+            open={mobileSidebarOpen}
+            onOpenChange={setMobileSidebarOpen}
+            direction="left"
+          >
+            <DrawerContent className="h-full top-0 left-0 right-auto mt-0 w-[300px] rounded-none">
+              <div className="p-4 h-full overflow-y-auto">
+                {leftPanelView === "menu"
+                  ? renderSidebarContent()
+                  : renderSectionEditor()}
+              </div>
+            </DrawerContent>
+          </Drawer>
+
+          {/* Main Content */}
+          <div className="h-full">
+            {mobileView === "editor" ? (
+              <div className="p-4 h-full overflow-y-auto">
+                {leftPanelView === "menu"
+                  ? renderSidebarContent()
+                  : renderSectionEditor()}
+              </div>
+            ) : (
+              renderPreviewPanel()
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop Layout
+  return (
+    <div className="flex h-screen bg-muted/40">
+      {/* Editor Sidebar */}
+      <div className="w-1/2 border-r overflow-y-auto p-6 bg-background">
+        {leftPanelView === "menu"
+          ? renderSidebarContent()
+          : renderSectionEditor()}
+      </div>
+
+      {/* Preview Panel */}
+      <div className="w-1/2 overflow-y-auto flex flex-col bg-gray-50 dark:bg-gray-900 print:bg-white print:p-0 print:m-0">
+        {renderPreviewPanel()}
       </div>
     </div>
   );
