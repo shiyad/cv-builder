@@ -196,6 +196,67 @@ export function DownloadButton({
     }
   };
 
+  const generatePDFWithIronPdf = async (): Promise<Blob> => {
+    const hasAccess = await checkPremiumAccess();
+    if (!hasAccess) {
+      return new Blob();
+    }
+
+    const element = document.getElementById("cv-preview");
+    if (!element) throw new Error("Preview not found");
+
+    // Clone the element to modify for PDF
+    const clone = element.cloneNode(true) as HTMLElement;
+    clone.style.width = "794px"; // A4 width in pixels (210mm ≈ 794px at 96dpi)
+    clone.style.padding = "0";
+    clone.style.margin = "0";
+
+    // Special handling for images in the clone
+    const images = clone.querySelectorAll("img");
+    images.forEach((img) => {
+      img.style.maxWidth = "100%";
+      img.style.height = "auto";
+    });
+
+    const html = clone.outerHTML;
+    document.body.appendChild(clone);
+    clone.style.visibility = "hidden";
+
+    try {
+      const res = await fetch("/api/generate-pdf-iron", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          html,
+          options: {
+            paperSize: "A4",
+            margin: 0,
+            printBackground: true,
+            cssMediaType: "print",
+            enableJavaScript: true,
+            timeout: 30000, // 30 seconds timeout
+          },
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(
+          errorData.message || "Failed to generate PDF with IronPDF"
+        );
+      }
+
+      return await res.blob();
+    } catch (error) {
+      console.error("IronPDF generation error:", error);
+      throw error;
+    } finally {
+      if (clone.parentNode) {
+        document.body.removeChild(clone);
+      }
+    }
+  };
+
   const generateDOCX = async () => {
     const { cv_data } = cv;
     const doc = new Document({
@@ -287,7 +348,6 @@ export function DownloadButton({
         user_id: user.id,
         cv_id: cv.id,
         format,
-        template_id: template.id,
         is_premium: template.is_premium || false,
       });
 

@@ -83,7 +83,9 @@ export interface CVFormData {
 
 export interface TemplateConfig {
   colors: {
+    tertiary?: string;
     primary: string;
+    primaryText?: string;
     secondary: string;
     text: string;
     background: string;

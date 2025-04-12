@@ -74,6 +74,7 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CVLinkManager } from "./cv-link-manager";
 import toast from "react-hot-toast";
+import { SoftwareExpertTemplate } from "./templates/SoftwareExpertTemplate";
 
 // Template and color configurations
 const templates = [
@@ -1092,6 +1093,8 @@ export default function CVTemplatesPage({
         return <ExecutiveModernTemplate {...templateProps} />;
       case "13ed4517-ac3a-4afb-bd91-708d3c449553":
         return <MechanicalEngineerTemplate {...templateProps} />;
+      case "cf7dc6c6-7c52-42b7-ab4b-6b07f503124b":
+        return <SoftwareExpertTemplate {...templateProps} />;
       case "executive":
         return <ExecutiveTemplate {...templateProps} />;
       default:
