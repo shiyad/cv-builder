@@ -27,13 +27,24 @@ const features = [
     icon: <Check className="text-green-500 w-5 h-5" />,
   },
   {
-    title: "Multiple Export Formats",
-    description: "Download your CV as PDF, Word, or plain text",
+    title: "Export to PDF",
+    description: "Download your CV as PDF.",
     icon: <Check className="text-green-500 w-5 h-5" />,
   },
   {
     title: "Cloud Storage",
     description: "Save multiple versions of your CV and access them anywhere",
+    icon: <Check className="text-green-500 w-5 h-5" />,
+  },
+  {
+    title: "Cloud Storage",
+    description: "Save multiple versions of your CV and access them anywhere",
+    icon: <Check className="text-green-500 w-5 h-5" />,
+  },
+  {
+    title: "Public CV Sharing",
+    description:
+      "Create shareable links for your CV and track views and visitors",
     icon: <Check className="text-green-500 w-5 h-5" />,
   },
 ];

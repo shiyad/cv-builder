@@ -372,9 +372,9 @@ export function DownloadButton({
         <DropdownMenuItem onClick={() => handleDownload("pdf")}>
           PDF
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleDownload("docx")}>
+        {/* <DropdownMenuItem onClick={() => handleDownload("docx")}>
           Word (DOCX)
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
       </DropdownMenuContent>
     </DropdownMenu>
   );
