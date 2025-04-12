@@ -91,3 +91,22 @@
 .template-card:hover .template-image-container::after {
   opacity: 1;
 }
+
+.rdp-nav_button_previous::after,
+.rdp-nav_button_next::after {
+  content: "";
+  display: inline-block;
+  background-color: currentColor;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  width: 1rem;
+  height: 1rem;
+}
+
+.rdp-nav_button_previous::after {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m15 18-6-6 6-6'/%3E%3C/svg%3E");
+}
+
+.rdp-nav_button_next::after {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E");
+}
