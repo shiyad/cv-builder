@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Download, FileText, Sparkles } from "lucide-react";
 import { DownloadButton } from "@/components/cv/download-button";
 import { motion } from "framer-motion";
+import { trackView } from "@/actions/track-view";
 
 type FormData = {
   contact_information?: {
@@ -150,7 +151,7 @@ export default function Page() {
       // Step 1: Lookup the link via slug (params.id)
       const { data: linkData, error: linkError } = await supabase
         .from("cv_links")
-        .select("cv_id, is_active")
+        .select("id, is_active")
         .eq("cv_id", params.id)
         .single();
 
@@ -160,11 +161,20 @@ export default function Page() {
         return;
       }
 
+      console.log("🔗 Link Data:", linkData);
+
+      // 2. Track the view if shared
+      if (isSharedView) {
+        console.log("👀 Tracking view for shared CV");
+        const result = await trackView(linkData.id);
+        console.log("📊 Tracking result:", result);
+      }
+
       // Step 2: Fetch the actual CV by its ID
       const { data: cv, error: cvError } = await supabase
         .from("user_cvs")
         .select("*")
-        .eq("template_id", linkData.cv_id)
+        .eq("template_id", params.id)
         .single();
 
       if (cvError || !cv?.is_public) {
@@ -182,7 +192,7 @@ export default function Page() {
     };
 
     fetchCV();
-  }, [params.id, supabase]);
+  }, [params.id, supabase, isSharedView]);
 
   if (loading)
     return (

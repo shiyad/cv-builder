@@ -637,9 +637,97 @@ export default function CVTemplatesPage({
             .single();
         } else {
           console.log("Trying to update CV", { cvId, userId: user.id, cvData });
+
+          // 1. First get current CV state
+          const { data: currentCV, error: fetchError } = await supabase
+            .from("user_cvs")
+            .select("template_id, updated_at")
+            .eq("id", cvId)
+            .single();
+
+          if (fetchError) throw fetchError;
+
+          // 2. Check if template is actually changing
+          const isTemplateChanging =
+            currentCV?.template_id !== selectedTemplate.id;
+
+          if (isTemplateChanging) {
+            // 3. Get count of existing links (using count() for efficiency)
+            const { count: linkCount, error: countError } = await supabase
+              .from("cv_links")
+              .select("*", { count: "exact", head: true })
+              .eq("cv_id", currentCV.template_id);
+
+            if (countError) throw countError;
+
+            // 4. If links exist, show confirmation
+            if (linkCount && linkCount > 0) {
+              try {
+                const confirmed = await new Promise<boolean>((resolve) => {
+                  toast.custom(
+                    (t) => (
+                      <div className="bg-white p-4 rounded-lg shadow-lg max-w-md">
+                        <h3 className="font-bold text-lg mb-2">
+                          Template Change Warning
+                        </h3>
+                        <p className="mb-4">
+                          This will delete {linkCount} shared link(s). Continue?
+                        </p>
+                        <div className="flex justify-end gap-2">
+                          <button
+                            onClick={() => {
+                              toast.dismiss(t.id);
+                              resolve(false);
+                            }}
+                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded hover:bg-gray-200"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={() => {
+                              toast.dismiss(t.id);
+                              resolve(true);
+                            }}
+                            className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded hover:bg-red-700"
+                          >
+                            Confirm
+                          </button>
+                        </div>
+                      </div>
+                    ),
+                    { duration: Infinity }
+                  );
+                });
+
+                if (!confirmed) {
+                  toast.dismiss(toastId);
+                  setIsLoading(false);
+                  return null;
+                }
+
+                // 5. Delete links in a transaction
+                const { error: deleteError } = await supabase
+                  .from("cv_links")
+                  .delete()
+                  .eq("cv_id", currentCV.template_id);
+
+                if (deleteError) throw deleteError;
+
+                toast.success(`Removed ${linkCount} shared link(s)`);
+              } catch (err) {
+                console.error("Link deletion failed:", err);
+                throw err;
+              }
+            }
+          }
+
+          // 6. Now safe to update the CV
           result = await supabase
             .from("user_cvs")
-            .update(cvData)
+            .update({
+              ...cvData,
+              updated_at: new Date().toISOString(),
+            })
             .eq("id", cvId)
             .eq("user_id", user.id)
             .select()

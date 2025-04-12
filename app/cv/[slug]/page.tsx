@@ -3,7 +3,9 @@ import { createClient } from "@/utils/supabase/server";
 import { notFound, redirect } from "next/navigation";
 import { headers } from "next/headers";
 
-export default async function SharedCVPage(ctx: { params: Promise<{ slug: string }> }) {
+export default async function SharedCVPage(ctx: {
+  params: Promise<{ slug: string }>;
+}) {
   const { params } = ctx; // ✅ Step 1: awaitable context wrapper
   const { slug } = await params; // ✅ Step 2: await before destructuring
 
@@ -18,6 +20,10 @@ export default async function SharedCVPage(ctx: { params: Promise<{ slug: string
     .eq("is_active", true)
     .single();
 
+  console.log(cvLink);
+
+  debugger;
+
   if (!cvLink) return notFound();
 
   // Record the view
@@ -30,12 +36,16 @@ export default async function SharedCVPage(ctx: { params: Promise<{ slug: string
     },
   ]);
 
+  debugger;
+
   // Increment view count
   await supabase
     .from("cv_links")
     .update({ view_count: cvLink.view_count + 1 })
     .eq("id", cvLink.id);
 
+  console.log(cvLink);
+
   // Redirect to the CV viewer with a special flag
-  return redirect(`/cv/shared/${cvLink.user_cvs.template_id}?shared=true`);
+  return redirect(`/cv/shared/${cvLink.cv_id}?shared=true`);
 }

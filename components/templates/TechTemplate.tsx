@@ -78,7 +78,9 @@ export const TechTemplate = ({ formData, styles }: TemplateProps) => {
           <div className="w-3 h-3 rounded-full bg-yellow-500" />
           <div className="w-3 h-3 rounded-full bg-green-500" />
         </div>
-        <div className="text-sm text-gray-400">shiyad_ismail_cv.js</div>
+        <div className="text-sm text-gray-400">
+          _{contact_information.first_name}_{contact_information.last_name}.js
+        </div>
       </div>
 
       <div className="p-6 max-w-6xl mx-auto print:p-0 print:max-w-full">
