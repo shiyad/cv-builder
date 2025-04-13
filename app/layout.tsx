@@ -1,4 +1,3 @@
-// app/layout.tsx
 import { EnvVarWarning } from "@/components/env-var-warning";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
@@ -21,9 +20,70 @@ const defaultUrl = process.env.NEXT_PUBLIC_SITE_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "CVInMinute - Professional CV Builder",
+  title: {
+    default: "CVInMinute - Professional CV Builder & Resume Maker",
+    template: "%s | CVInMinute - Create Perfect Resumes Fast",
+  },
   description:
-    "Create stunning, professional resumes in minutes with our easy-to-use CV builder",
+    "Create professional resumes in minutes with our free CV builder. Download ATS-friendly templates, get expert tips, and land more interviews with our easy resume maker tool.",
+  keywords: [
+    "CV builder",
+    "resume maker",
+    "professional CV",
+    "ATS resume",
+    "free CV creator",
+    "online resume builder",
+    "CV templates",
+    "job application",
+    "career tools",
+    "resume writing",
+    "CV download",
+    "modern resume",
+    "creative CV",
+    "job search",
+    "employment",
+    "career builder",
+  ],
+  openGraph: {
+    title: "CVInMinute - Create Professional Resumes in Minutes",
+    description:
+      "Build your perfect CV with our free online resume builder. ATS-friendly templates, expert tips, and easy download.",
+    url: defaultUrl,
+    siteName: "CVInMinute",
+    images: [
+      {
+        url: `${defaultUrl}/opengraph-image.png`,
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CVInMinute - Professional CV Builder & Resume Maker",
+    description:
+      "Create stunning resumes in minutes with our free online CV builder. Download ATS-friendly templates today!",
+    images: [`${defaultUrl}/opengraph-image.png`],
+  },
+  alternates: {
+    canonical: defaultUrl,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: "ZoE4-h4qMYFKG8X_ZnR8bicRHhxEXuXXipzT_paW3bo",
+  },
 };
 
 const geistSans = Geist({
@@ -38,6 +98,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={geistSans.className} suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/site.webmanifest" />
+      </head>
       <body className="bg-background text-foreground">
         <PaypalProviderClient>
           <ThemeProvider
@@ -63,6 +129,7 @@ export default function RootLayout({
                             <Link
                               href="/features"
                               className="text-gray-400 hover:text-white"
+                              title="CV Builder Features"
                             >
                               Features
                             </Link>
@@ -71,6 +138,7 @@ export default function RootLayout({
                             <Link
                               href="/pricing"
                               className="text-gray-400 hover:text-white"
+                              title="Resume Builder Pricing"
                             >
                               Pricing
                             </Link>
@@ -79,6 +147,7 @@ export default function RootLayout({
                             <Link
                               href="/templates"
                               className="text-gray-400 hover:text-white"
+                              title="Free CV Templates"
                             >
                               Templates
                             </Link>
@@ -95,6 +164,7 @@ export default function RootLayout({
                             <Link
                               href="/blog"
                               className="text-gray-400 hover:text-white"
+                              title="Resume Writing Blog"
                             >
                               Blog
                             </Link>
@@ -103,6 +173,7 @@ export default function RootLayout({
                             <Link
                               href="/guides"
                               className="text-gray-400 hover:text-white"
+                              title="CV Writing Guides"
                             >
                               Guides
                             </Link>
@@ -111,6 +182,7 @@ export default function RootLayout({
                             <Link
                               href="/faq"
                               className="text-gray-400 hover:text-white"
+                              title="CV Builder FAQ"
                             >
                               FAQ
                             </Link>
@@ -125,6 +197,7 @@ export default function RootLayout({
                             <Link
                               href="/about"
                               className="text-gray-400 hover:text-white"
+                              title="About Our CV Builder"
                             >
                               About Us
                             </Link>
@@ -133,6 +206,7 @@ export default function RootLayout({
                             <Link
                               href="/contact"
                               className="text-gray-400 hover:text-white"
+                              title="Contact CVInMinute"
                             >
                               Contact
                             </Link>
@@ -147,6 +221,7 @@ export default function RootLayout({
                             <Link
                               href="/privacy"
                               className="text-gray-400 hover:text-white"
+                              title="Privacy Policy"
                             >
                               Privacy Policy
                             </Link>
@@ -155,6 +230,7 @@ export default function RootLayout({
                             <Link
                               href="/return-policy"
                               className="text-gray-400 hover:text-white"
+                              title="Return Policy"
                             >
                               Return Policy
                             </Link>
@@ -163,6 +239,7 @@ export default function RootLayout({
                             <Link
                               href="/terms"
                               className="text-gray-400 hover:text-white"
+                              title="Terms of Service"
                             >
                               Terms of Service
                             </Link>
@@ -174,6 +251,9 @@ export default function RootLayout({
                     <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
                       <div className="flex items-center gap-2 mb-4 md:mb-0">
                         <LogoBlackBg />
+                        <span className="sr-only">
+                          CVInMinute - Professional Resume Builder
+                        </span>
                       </div>
 
                       <div className="text-gray-400 text-sm">

@@ -133,7 +133,7 @@ export default function Hero() {
           >
             <div className="relative z-10 w-full h-auto shadow-2xl rounded-xl overflow-hidden border-8 border-white rotate-2 hover:rotate-0 transition-transform duration-500">
               <Image
-                src="/opengraph-image.png"
+                src="/opengraph-image8.png"
                 alt="Professional CV Example"
                 width={800}
                 height={1000}

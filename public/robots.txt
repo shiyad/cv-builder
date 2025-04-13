@@ -1,0 +1,16 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /protected/
+Disallow: /admin/
+Disallow: /account/
+Disallow: /checkout/
+Disallow: /dashboard/
+Disallow: /private/
+
+# Host
+Host: https://www.cvinminute.com
+
+# Sitemaps
+Sitemap: https://www.cvinminute.com/sitemap.xml
