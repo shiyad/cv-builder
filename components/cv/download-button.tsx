@@ -174,7 +174,7 @@ export function DownloadButton({
           options: {
             format: "A4",
             margin: "0mm",
-            printBackground: true,
+            printBackground: false,
             preferCSSPageSize: true,
           },
         }),

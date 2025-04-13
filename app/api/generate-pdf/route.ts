@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
     });
 
     const page = await browser.newPage();
+    //font-family: sans-serif;
 
     await page.setContent(
       `
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
           <head>
             <style>
               @import url('https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css');
-              body { font-family: sans-serif; padding: 0rem; }
+              body {  padding: 0rem; } 
             </style>
           </head>
           <body>${html}</body>

@@ -60,7 +60,9 @@ export const CreativeTemplate = ({ formData, styles }: TemplateProps) => {
               className="rounded-full object-cover border-4 border-white shadow-xl"
             /> */}
             <img
-              src={contact_information.profile_picture}
+              src={
+                contact_information.profile_picture || "/opengraph-image7.png"
+              }
               alt="Profile"
               className="object-cover w-full h-full"
               style={{

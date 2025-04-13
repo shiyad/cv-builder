@@ -14,22 +14,31 @@ export const SoftwareExpertTemplate = ({ formData, styles }: TemplateProps) => {
   return (
     <div
       id="cv-preview"
-      className="max-w-5xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden relative font-sans"
+      className="max-w-5xl mx-auto overflow-hidden relative font-sans"
       style={{
-        backgroundColor: styles.colors.background,
+        // backgroundColor: styles.colors.background,
         color: styles.colors.text,
       }}
     >
-      {/* Profile Picture */}
+      {/* Profile Picture - Fixed positioning and border */}
       {contact_information.profile_picture && (
         <div
-          className="absolute left-6 top-6 w-32 h-32 rounded-full border-4 z-20 shadow-md"
-          style={{ borderColor: styles.colors.background }}
+          className="absolute left-6 top-6 w-32 h-32 rounded-full border-4 z-20 shadow-md overflow-hidden"
+          style={{
+            borderColor: styles.colors.background,
+            boxSizing: "border-box",
+          }}
         >
           <img
             src={contact_information.profile_picture}
             alt="Profile"
-            className="w-full h-full object-cover rounded-full"
+            className="w-full h-full object-cover"
+            style={{
+              display: "block",
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
           />
         </div>
       )}

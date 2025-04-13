@@ -35,7 +35,9 @@ export const ModernTemplate = ({ formData, styles }: TemplateProps) => {
               className="rounded-full object-cover border-4 border-white"
             /> */}
             <img
-              src={contact_information.profile_picture}
+              src={
+                contact_information.profile_picture || "/opengraph-image7.png"
+              }
               alt="Profile"
               className="object-cover w-full h-full border-4 border-white shadow-lg"
               style={{

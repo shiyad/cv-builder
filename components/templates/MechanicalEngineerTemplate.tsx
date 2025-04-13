@@ -44,7 +44,9 @@ export const MechanicalEngineerTemplate = ({
           {contact_information.profile_picture && (
             <div className="w-32 h-32 mx-auto mb-6 relative rounded-full overflow-hidden border-4 border-white">
               <img
-                src={contact_information.profile_picture}
+                src={
+                  contact_information.profile_picture || "/opengraph-image7.png"
+                }
                 alt="Profile"
                 className="rounded-full object-cover w-full h-full shadow-lg print:shadow-none"
                 crossOrigin="anonymous"

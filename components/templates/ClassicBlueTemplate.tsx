@@ -34,7 +34,9 @@ export const ClassicBlueTemplate = ({ formData, styles }: TemplateProps) => {
           {contact_information.profile_picture && (
             <div className="w-36 h-36 mx-auto mb-6 relative rounded-full overflow-hidden border-4 shadow-md">
               <img
-                src={contact_information.profile_picture}
+                src={
+                  contact_information.profile_picture || "/opengraph-image7.png"
+                }
                 alt="Profile"
                 className="object-cover w-full h-full"
                 style={{

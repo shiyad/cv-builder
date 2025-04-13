@@ -55,7 +55,10 @@ export const ExecutiveModernTemplate = ({
               <div className="relative mx-auto">
                 <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-xl relative z-10">
                   <img
-                    src={contact_information.profile_picture}
+                    src={
+                      contact_information.profile_picture ||
+                      "/opengraph-image7.png"
+                    }
                     alt="Profile"
                     className="object-cover w-full h-full"
                     crossOrigin="anonymous"

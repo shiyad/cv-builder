@@ -45,7 +45,9 @@ export const ClassicTemplate = ({ formData, styles }: TemplateProps) => {
               priority
             /> */}
             <img
-              src={contact_information.profile_picture}
+              src={
+                contact_information.profile_picture || "/opengraph-image7.png"
+              }
               alt="Profile"
               className="object-cover w-full h-full"
               style={{
