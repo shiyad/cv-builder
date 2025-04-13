@@ -20,7 +20,6 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, FileText, Crown } from "lucide-react";
-// import { DashboardHeader } from "@/components/dashboard-header";
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
 
@@ -180,14 +179,13 @@ export default function AnalyticsPage() {
 
   if (!isPremium && !loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-        {/* <DashboardHeader /> */}
-        <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-          <div className="space-y-8">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                  <span className="bg-yellow-100 text-yellow-600 p-2 rounded-lg">
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="space-y-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-800">
+                <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+                  <span className="bg-yellow-100 dark:bg-yellow-900 text-yellow-600 dark:text-yellow-300 p-2 rounded-lg">
                     <Crown className="h-5 w-5" />
                   </span>
                   Premium Feature
@@ -195,13 +193,18 @@ export default function AnalyticsPage() {
               </div>
               <div className="p-6 text-center">
                 <div className="max-w-md mx-auto space-y-4">
-                  <Crown className="h-12 w-12 mx-auto text-yellow-500" />
-                  <h3 className="text-xl font-semibold">Upgrade to Premium</h3>
-                  <p className="text-gray-600">
+                  <Crown className="h-12 w-12 mx-auto text-yellow-500 dark:text-yellow-400" />
+                  <h3 className="text-xl font-semibold dark:text-white">
+                    Upgrade to Premium
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300">
                     Advanced analytics are only available for premium users.
                     Upgrade your account to access this feature and more.
                   </p>
-                  <Button onClick={() => router.push("/pricing")}>
+                  <Button
+                    onClick={() => router.push("/pricing")}
+                    className="mt-2"
+                  >
                     View Pricing Plans
                   </Button>
                 </div>
@@ -215,35 +218,34 @@ export default function AnalyticsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-        {/* <DashboardHeader /> */}
-        <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-          <div className="space-y-8">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                  <span className="bg-blue-100 text-blue-600 p-2 rounded-lg">
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="space-y-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-800">
+                <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+                  <span className="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 p-2 rounded-lg">
                     <FileText className="h-5 w-5" />
                   </span>
                   Analytics Dashboard
                 </h2>
               </div>
               <div className="p-6 space-y-4">
-                <div className="flex justify-between items-center">
-                  <Skeleton className="h-8 w-48" />
-                  <div className="flex gap-2">
-                    <Skeleton className="h-8 w-8" />
-                    <Skeleton className="h-8 w-48" />
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <Skeleton className="h-8 w-48 dark:bg-gray-700" />
+                  <div className="flex gap-2 w-full sm:w-auto">
+                    <Skeleton className="h-8 w-8 dark:bg-gray-700" />
+                    <Skeleton className="h-8 w-full sm:w-48 dark:bg-gray-700" />
                   </div>
                 </div>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {[1, 2, 3, 4].map((i) => (
-                    <Skeleton key={i} className="h-24" />
+                    <Skeleton key={i} className="h-24 dark:bg-gray-700" />
                   ))}
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
-                  {[1, 2, 3, 4].map((i) => (
-                    <Skeleton key={i} className="h-64" />
+                  {[1, 2].map((i) => (
+                    <Skeleton key={i} className="h-64 dark:bg-gray-700" />
                   ))}
                 </div>
               </div>
@@ -255,26 +257,25 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      {/* <DashboardHeader /> */}
-      <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <div className="space-y-8">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                  <span className="bg-blue-100 text-blue-600 p-2 rounded-lg">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="space-y-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-800">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+                  <span className="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 p-2 rounded-lg">
                     <FileText className="h-5 w-5" />
                   </span>
                   Analytics Dashboard
                 </h2>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 w-full sm:w-auto">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={handleRefresh}
                     disabled={isRefreshing}
-                    className="h-8"
+                    className="h-8 w-full sm:w-auto"
                   >
                     <RefreshCw
                       className={`h-3 w-3 mr-2 ${isRefreshing ? "animate-spin" : ""}`}
@@ -283,7 +284,7 @@ export default function AnalyticsPage() {
                   </Button>
                   <CalendarDateRangePicker
                     onDateChange={setDateRange}
-                    className="h-8"
+                    className="h-8 w-full sm:w-auto"
                   />
                 </div>
               </div>
@@ -297,7 +298,7 @@ export default function AnalyticsPage() {
                 </div>
               ) : (
                 <>
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     <StatCard title="Total Views" value={stats.totalViews} />
                     <StatCard
                       title="Unique Visitors"
@@ -309,91 +310,105 @@ export default function AnalyticsPage() {
 
                   <div className="grid gap-4 md:grid-cols-2">
                     <ChartCard title="Views Over Time">
-                      <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={groupViewsByDay(stats.views)}>
-                          <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                          <XAxis dataKey="date" fontSize={12} />
-                          <YAxis fontSize={12} />
-                          <Tooltip />
-                          <Bar
-                            dataKey="views"
-                            fill="#8884d8"
-                            radius={[4, 4, 0, 0]}
-                          />
-                        </BarChart>
-                      </ResponsiveContainer>
+                      <div className="h-[250px] sm:h-[300px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={groupViewsByDay(stats.views)}>
+                            <CartesianGrid
+                              strokeDasharray="3 3"
+                              opacity={0.3}
+                            />
+                            <XAxis dataKey="date" fontSize={10} />
+                            <YAxis fontSize={10} />
+                            <Tooltip />
+                            <Bar
+                              dataKey="views"
+                              fill="#8884d8"
+                              radius={[4, 4, 0, 0]}
+                            />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
                     </ChartCard>
 
                     <ChartCard title="Traffic Sources">
-                      <ResponsiveContainer width="100%" height={300}>
-                        <PieChart>
-                          <Pie
-                            data={stats.referrers}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={60}
-                            outerRadius={80}
-                            paddingAngle={2}
-                            dataKey="value"
-                            nameKey="name"
-                            label={({ name, percent }) =>
-                              `${name}: ${(percent * 100).toFixed(0)}%`
-                            }
-                          >
-                            {stats.referrers.map((_, index) => (
-                              <Cell
-                                key={`cell-${index}`}
-                                fill={COLORS[index % COLORS.length]}
-                              />
-                            ))}
-                          </Pie>
-                          <Tooltip />
-                        </PieChart>
-                      </ResponsiveContainer>
+                      <div className="h-[250px] sm:h-[300px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={stats.referrers}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={50}
+                              outerRadius={70}
+                              paddingAngle={2}
+                              dataKey="value"
+                              nameKey="name"
+                              label={({ name, percent }) =>
+                                `${name}: ${(percent * 100).toFixed(0)}%`
+                              }
+                            >
+                              {stats.referrers.map((_, index) => (
+                                <Cell
+                                  key={`cell-${index}`}
+                                  fill={COLORS[index % COLORS.length]}
+                                />
+                              ))}
+                            </Pie>
+                            <Tooltip />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
                     </ChartCard>
 
                     <ChartCard title="Device Distribution">
-                      <ResponsiveContainer width="100%" height={300}>
-                        <PieChart>
-                          <Pie
-                            data={stats.devices}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={60}
-                            outerRadius={80}
-                            paddingAngle={2}
-                            dataKey="value"
-                            nameKey="name"
-                            label={({ name, percent }) =>
-                              `${name}: ${(percent * 100).toFixed(0)}%`
-                            }
-                          >
-                            {stats.devices.map((_, index) => (
-                              <Cell
-                                key={`cell-${index}`}
-                                fill={COLORS[index % COLORS.length]}
-                              />
-                            ))}
-                          </Pie>
-                          <Tooltip />
-                        </PieChart>
-                      </ResponsiveContainer>
+                      <div className="h-[250px] sm:h-[300px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={stats.devices}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={50}
+                              outerRadius={70}
+                              paddingAngle={2}
+                              dataKey="value"
+                              nameKey="name"
+                              label={({ name, percent }) =>
+                                `${name}: ${(percent * 100).toFixed(0)}%`
+                              }
+                            >
+                              {stats.devices.map((_, index) => (
+                                <Cell
+                                  key={`cell-${index}`}
+                                  fill={COLORS[index % COLORS.length]}
+                                />
+                              ))}
+                            </Pie>
+                            <Tooltip />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
                     </ChartCard>
 
                     <ChartCard title="Geographic Distribution">
-                      <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={stats.countries}>
-                          <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                          <XAxis dataKey="name" fontSize={12} />
-                          <YAxis fontSize={12} />
-                          <Tooltip />
-                          <Bar
-                            dataKey="value"
-                            fill="#8884d8"
-                            radius={[4, 4, 0, 0]}
-                          />
-                        </BarChart>
-                      </ResponsiveContainer>
+                      <div className="h-[250px] sm:h-[300px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={stats.countries}>
+                            <CartesianGrid
+                              strokeDasharray="3 3"
+                              opacity={0.3}
+                            />
+                            <XAxis dataKey="name" fontSize={10} />
+                            <YAxis fontSize={10} />
+                            <Tooltip />
+                            <Bar
+                              dataKey="value"
+                              fill="#8884d8"
+                              radius={[4, 4, 0, 0]}
+                            />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
                     </ChartCard>
                   </div>
                 </>
@@ -408,14 +423,14 @@ export default function AnalyticsPage() {
 
 function StatCard({ title, value }: { title: string; value: string | number }) {
   return (
-    <Card className="hover:shadow-sm transition-shadow">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
+    <Card className="hover:shadow-sm transition-shadow dark:bg-gray-700">
+      <CardHeader className="pb-2 px-4">
+        <CardTitle className="text-xs font-medium text-muted-foreground dark:text-gray-300">
           {title}
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
+      <CardContent className="px-4">
+        <div className="text-xl font-bold dark:text-white">{value}</div>
       </CardContent>
     </Card>
   );
@@ -429,11 +444,13 @@ function ChartCard({
   children: React.ReactNode;
 }) {
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+    <Card className="dark:bg-gray-700">
+      <CardHeader className="pb-2 px-4">
+        <CardTitle className="text-sm font-medium dark:text-gray-200">
+          {title}
+        </CardTitle>
       </CardHeader>
-      <CardContent className="pt-0">{children}</CardContent>
+      <CardContent className="pt-0 px-0">{children}</CardContent>
     </Card>
   );
 }

@@ -88,7 +88,14 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Download, FileText, LayoutTemplate, ScanEye } from "lucide-react";
+import {
+  Download,
+  FileText,
+  LayoutDashboard,
+  LayoutTemplate,
+  Link,
+  ScanEye,
+} from "lucide-react";
 
 //   return (
 //     <section className="py-16 bg-white">
@@ -142,8 +149,18 @@ export default function Features() {
     },
     {
       icon: <Download className="h-8 w-8 text-blue-600" />,
-      title: "Multiple Formats",
-      description: "Download as PDF, Word, or plain text",
+      title: "Pixel Perfect PDFs",
+      description: "Download your CV as a pixel-perfect PDF",
+    },
+    {
+      icon: <Link className="h-8 w-8 text-blue-600" />,
+      title: "Shareable Link",
+      description: "Create a shareable link to track views on your CV",
+    },
+    {
+      icon: <LayoutDashboard className="h-8 w-8 text-blue-600" />,
+      title: "Tracking Dashboard",
+      description: "Access a dashboard with detailed view tracking features",
     },
   ];
 

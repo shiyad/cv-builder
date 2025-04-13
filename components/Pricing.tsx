@@ -33,6 +33,8 @@ export default function Pricing() {
         "Full customization",
         "ATS optimization",
         "Unlimited resume versions",
+        "Can create shareable links for your CV",
+        "Dashboard with fully tracking feature",
         //"Cover letter builder",
         "Priority support",
       ],

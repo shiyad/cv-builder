@@ -3,7 +3,13 @@
 import { JSX, useEffect, useState, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +44,7 @@ import {
   Menu,
   X,
   Star,
+  Crown,
 } from "lucide-react";
 import clsx from "clsx";
 import { createClient } from "@/utils/supabase/client";
@@ -75,6 +82,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { CVLinkManager } from "./cv-link-manager";
 import toast from "react-hot-toast";
 import { SoftwareExpertTemplate } from "./templates/SoftwareExpertTemplate";
+import Link from "next/link";
+import { PremiumBanner } from "./PremiumBanner";
 
 // Template and color configurations
 const templates = [
@@ -265,7 +274,10 @@ export default function CVTemplatesPage({
 
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [mobileView, setMobileView] = useState<"editor" | "preview">("editor");
+  // Enhanced mobile view handling
+  const [mobileView, setMobileView] = useState<"editor" | "preview">(
+    isDesktop ? "editor" : "preview"
+  );
 
   const [selectedColor, setSelectedColor] = useState("blue");
   const [selectedTemplate, setSelectedTemplate] = useState<Template>(); // useState("template1");
@@ -1103,11 +1115,12 @@ export default function CVTemplatesPage({
   };
 
   const renderMobileHeader = () => (
-    <div className="lg:hidden sticky top-0 z-50 bg-background border-b p-2 flex items-center justify-between">
+    <div className="lg:hidden sticky top-0 z-50 bg-background border-b p-4 flex items-center justify-between shadow-sm">
       <Button
         variant="ghost"
         size="icon"
         onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+        className="rounded-full"
       >
         {mobileSidebarOpen ? (
           <X className="h-5 w-5" />
@@ -1115,19 +1128,27 @@ export default function CVTemplatesPage({
           <Menu className="h-5 w-5" />
         )}
       </Button>
-      <h1 className="text-lg font-semibold">CV Builder</h1>
+
+      <div className="flex items-center gap-2">
+        <Badge variant="outline" className="px-3 py-1 text-sm">
+          {cvTitle || "My CV"}
+        </Badge>
+      </div>
+
       <div className="flex items-center gap-2">
         <Button
           variant={mobileView === "editor" ? "default" : "ghost"}
           size="sm"
           onClick={() => setMobileView("editor")}
+          className="rounded-full"
         >
-          Editor
+          Edit
         </Button>
         <Button
           variant={mobileView === "preview" ? "default" : "ghost"}
           size="sm"
           onClick={() => setMobileView("preview")}
+          className="rounded-full"
         >
           Preview
         </Button>
@@ -1137,123 +1158,72 @@ export default function CVTemplatesPage({
 
   const renderSidebarContent = () => (
     <>
-      {/* Header Section */}
-      <div className="flex flex-col gap-4 mb-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-            CV Customization
-          </h2>
-          <Badge variant="outline" className="px-3 py-1">
-            Draft
-          </Badge>
-        </div>
+      {/* Premium Banner */}
+      <PremiumBanner />
 
-        {/* Title and Actions Bar */}
-        <div className="flex flex-col sm:flex-row items-center gap-4 bg-muted/50 p-3 rounded-lg">
-          <Input
-            value={cvTitle}
-            onChange={(e) => setCvTitle(e.target.value)}
-            placeholder="CV Title"
-            className="flex-1 min-w-0 w-full sm:w-auto"
-          />
+      {/* Title and Actions Bar */}
+      <div className="flex flex-col sm:flex-row items-center gap-4 bg-gradient-to-r from-primary/5 to-muted/10 p-4 rounded-xl mb-6">
+        <Input
+          value={cvTitle}
+          onChange={(e) => setCvTitle(e.target.value)}
+          placeholder="CV Title"
+          className="flex-1 min-w-0 bg-background"
+        />
 
-          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="flex items-center space-x-1">
-                    <Switch
-                      id="public-toggle"
-                      checked={form.is_public || false}
-                      onCheckedChange={(checked) =>
-                        setForm((prev) => ({
-                          ...prev,
-                          is_public: checked,
-                        }))
-                      }
-                    />
-                    <Label htmlFor="public-toggle" className="cursor-pointer">
-                      {form.is_public ? (
-                        <Eye className="h-4 w-4 text-primary" />
-                      ) : (
-                        <EyeOff className="h-4 w-4 text-muted-foreground" />
-                      )}
-                    </Label>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {form.is_public ? "Public CV" : "Private CV"}
-                </TooltipContent>
-              </Tooltip>
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    onClick={() => saveCV(false)}
-                    disabled={isLoading}
-                    size="icon"
-                    variant="ghost"
-                    className="h-8 w-8"
-                  >
-                    {isLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center space-x-2">
+                  <Label htmlFor="public-toggle" className="cursor-pointer">
+                    {form.is_public ? (
+                      <Eye className="h-5 w-5 text-primary" />
                     ) : (
-                      <Save className="h-4 w-4" />
+                      <EyeOff className="h-5 w-5 text-muted-foreground" />
                     )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Save CV</TooltipContent>
-              </Tooltip>
+                  </Label>
+                  <Switch
+                    id="public-toggle"
+                    checked={form.is_public || false}
+                    onCheckedChange={(checked) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        is_public: checked,
+                      }))
+                    }
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                {form.is_public ? "Public CV" : "Private CV"}
+              </TooltipContent>
+            </Tooltip>
 
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    onClick={() => saveCV(true)}
-                    disabled={isLoading}
-                    size="icon"
-                    variant="ghost"
-                    className="h-8 w-8"
-                  >
-                    <SaveAll className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Save As New</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            {cvId && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      onClick={deleteCV}
-                      disabled={isLoading}
-                      size="icon"
-                      variant="ghost"
-                      className="h-8 w-8 text-destructive hover:text-destructive"
-                    >
-                      {isLoading ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Trash2 className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Delete CV</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
-          </div>
+            <Button
+              onClick={() => saveCV(false)}
+              disabled={isLoading}
+              size="sm"
+              className="gap-2"
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4" />
+              )}
+              Save
+            </Button>
+          </TooltipProvider>
         </div>
       </div>
 
       {/* Main Content */}
       <Tabs defaultValue="templates">
-        <TabsList className="grid grid-cols-2 w-full bg-muted/50">
-          <TabsTrigger value="sections" className="flex gap-2 py-2">
+        <TabsList className="grid grid-cols-2 w-full bg-muted/50 rounded-lg p-1">
+          <TabsTrigger value="sections" className="flex gap-2 py-2 rounded-md">
             <FileText className="w-4 h-4" />
             <span>Sections</span>
           </TabsTrigger>
-          <TabsTrigger value="templates" className="flex gap-2 py-2">
+          <TabsTrigger value="templates" className="flex gap-2 py-2 rounded-md">
             <LayoutTemplate className="w-4 h-4" />
             <span>Templates</span>
           </TabsTrigger>
@@ -1261,9 +1231,9 @@ export default function CVTemplatesPage({
 
         {/* Sections Panel */}
         <TabsContent value="sections" className="pt-4">
-          <Card className="border-none shadow-sm">
+          <Card className="border-none shadow-sm rounded-xl">
             <CardHeader className="px-4 py-3">
-              <CardTitle className="text-base font-medium">
+              <CardTitle className="text-lg font-semibold">
                 CV Sections
               </CardTitle>
             </CardHeader>
@@ -1277,18 +1247,23 @@ export default function CVTemplatesPage({
                     if (!isDesktop) setMobileSidebarOpen(false);
                   }}
                   className={clsx(
-                    "p-3 rounded-md cursor-pointer flex items-center gap-3 transition-colors",
+                    "p-3 rounded-lg cursor-pointer flex items-center gap-3 transition-colors",
                     "hover:bg-accent/50",
                     activeSection === section.id && "bg-accent"
                   )}
                 >
-                  <div className="w-8 h-8 rounded-full bg-muted/80 flex items-center justify-center p-2 text-muted-foreground">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center p-2 text-primary">
                     {section.icon}
                   </div>
                   <div>
                     <h3 className="text-sm font-medium">
                       {section.display_name}
                     </h3>
+                    <p className="text-xs text-muted-foreground">
+                      {section.schema.type === "array"
+                        ? `Manage your ${section.display_name.toLowerCase()}`
+                        : "Edit details"}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -1296,9 +1271,9 @@ export default function CVTemplatesPage({
           </Card>
         </TabsContent>
 
-        {/* Templates Panel */}
+        {/* Enhanced Templates Panel */}
         <TabsContent value="templates" className="pt-4">
-          <Card className="border-none shadow-lg rounded-xl">
+          <Card className="border-none shadow-lg rounded-xl overflow-hidden">
             <CardHeader className="px-6 py-4 bg-gradient-to-r from-primary/5 to-muted/10">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-xl font-semibold text-primary">
@@ -1306,127 +1281,114 @@ export default function CVTemplatesPage({
                 </CardTitle>
                 <Badge
                   variant="outline"
-                  className="px-3 py-1 text-sm font-medium"
+                  className="px-3 py-1 text-sm font-medium bg-background"
                 >
                   {templates.length} Templates Available
                 </Badge>
               </div>
             </CardHeader>
             <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {templates.map((template) => (
-                  <div
-                    key={template.id}
-                    className={clsx(
-                      "group relative rounded-xl overflow-hidden h-[280px]",
-                      "border-2 cursor-pointer transition-all duration-300",
-                      "hover:shadow-xl hover:border-primary/40 hover:scale-[1.02]",
-                      "transform-gpu will-change-transform",
-                      selectedTemplate?.id === template.id
-                        ? "ring-4 ring-primary border-primary/70 shadow-lg"
-                        : "border-muted/30"
-                    )}
-                    onClick={() => {
-                      setSelectedTemplate(template);
-                      if (!isDesktop) setMobileSidebarOpen(false);
-                    }}
-                  >
-                    {/* Template Thumbnail */}
-                    <div className="absolute inset-0">
-                      <Image
-                        src={template.thumbnail_url}
-                        alt={template.name}
-                        fill
-                        className="object-cover object-top"
-                        quality={100}
-                        priority={selectedTemplate?.id === template.id}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
-                    </div>
-
-                    {/* Premium Badge */}
-                    {template.is_premium && (
-                      <div className="absolute top-3 right-3">
-                        <Badge className="px-3 py-1 text-xs font-bold bg-gradient-to-r from-amber-500 to-amber-600 shadow-md">
-                          <Star className="w-3 h-3 mr-1" />
-                          Premium
-                        </Badge>
-                      </div>
-                    )}
-
-                    {/* Template Info */}
-                    <div className="relative z-10 h-full flex flex-col justify-end p-5">
-                      <div className="flex flex-col gap-2">
-                        <div className="flex justify-between items-center">
-                          <h3 className="text-white font-bold text-lg drop-shadow-lg">
-                            {template.name}
-                          </h3>
-                          {selectedTemplate?.id === template.id && (
-                            <div className="w-7 h-7 flex items-center justify-center bg-primary rounded-full text-white shadow-lg">
-                              <Check className="h-4 w-4" />
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Template Features */}
-                        <div className="flex flex-wrap gap-1.5">
-                          <Badge
-                            variant="secondary"
-                            className="text-xs px-2 py-0.5 bg-white/10 text-white/90"
-                          >
-                            {template.template_config?.layout ||
-                              "Single Column"}
-                          </Badge>
-                          <Badge
-                            variant="secondary"
-                            className="text-xs px-2 py-0.5 bg-white/10 text-white/90"
-                          >
-                            {template.template_config?.font || "Modern"}
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Hover Overlay */}
-                    <div
-                      className={clsx(
-                        "absolute inset-0 flex items-center justify-center",
-                        "bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity",
-                        "duration-300"
-                      )}
-                    >
-                      {/* <Button
-                        variant="outline"
-                        size="sm"
-                        className="bg-white/90 hover:bg-white"
-                      >
-                        <Eye className="w-4 h-4 mr-2" />
-                        Preview Template
-                      </Button> */}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Categories Filter (optional) */}
-              <div className="mt-8 flex flex-wrap gap-2 justify-center">
-                <Button variant="outline" size="sm" className="rounded-full">
-                  All Templates
+              {/* Template Categories */}
+              <div className="flex flex-wrap gap-2 mb-6">
+                <Button variant="default" size="sm" className="rounded-full">
+                  All
                 </Button>
-                <Button variant="ghost" size="sm" className="rounded-full">
+                <Button variant="outline" size="sm" className="rounded-full">
                   Modern
                 </Button>
-                <Button variant="ghost" size="sm" className="rounded-full">
+                <Button variant="outline" size="sm" className="rounded-full">
                   Classic
                 </Button>
-                <Button variant="ghost" size="sm" className="rounded-full">
-                  Creative
-                </Button>
-                <Button variant="ghost" size="sm" className="rounded-full">
-                  Professional
+                <Button variant="outline" size="sm" className="rounded-full">
+                  <Star className="w-3 h-3 mr-1 text-amber-500" />
+                  Premium
                 </Button>
               </div>
+              <ScrollArea className="h-[32rem] rounded-md border">
+                {/* Template Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {templates.map((template) => (
+                    <div
+                      key={template.id}
+                      className={clsx(
+                        "group relative rounded-xl overflow-hidden h-[280px]",
+                        "border-2 cursor-pointer transition-all duration-300",
+                        "hover:shadow-xl hover:border-primary/40 hover:scale-[1.02]",
+                        "transform-gpu will-change-transform",
+                        selectedTemplate?.id === template.id
+                          ? "ring-4 ring-primary border-primary/70 shadow-lg"
+                          : "border-muted/30"
+                      )}
+                      onClick={() => {
+                        setSelectedTemplate(template);
+                        if (!isDesktop) setMobileSidebarOpen(false);
+                      }}
+                    >
+                      {/* Template Thumbnail */}
+                      <div className="absolute inset-0">
+                        <Image
+                          src={template.thumbnail_url}
+                          alt={template.name}
+                          fill
+                          className="object-cover object-top"
+                          quality={100}
+                          priority={selectedTemplate?.id === template.id}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
+                      </div>
+
+                      {/* Premium Badge */}
+                      {template.is_premium && (
+                        <div className="absolute top-3 right-3">
+                          <Badge className="px-3 py-1 text-xs font-bold bg-gradient-to-r from-amber-500 to-amber-600 shadow-md">
+                            <Star className="w-3 h-3 mr-1" />
+                            Premium
+                          </Badge>
+                        </div>
+                      )}
+
+                      {/* Template Info */}
+                      <div className="relative z-10 h-full flex flex-col justify-end p-5">
+                        <div className="flex flex-col gap-2">
+                          <div className="flex justify-between items-center">
+                            <h3 className="text-white font-bold text-lg drop-shadow-lg">
+                              {template.name}
+                            </h3>
+                            {selectedTemplate?.id === template.id && (
+                              <div className="w-7 h-7 flex items-center justify-center bg-primary rounded-full text-white shadow-lg">
+                                <Check className="h-4 w-4" />
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Template Features */}
+                          <div className="flex flex-wrap gap-1.5">
+                            <Badge
+                              variant="secondary"
+                              className="text-xs px-2 py-0.5 bg-white/10 text-white/90"
+                            >
+                              {template.template_config?.layout ||
+                                "Single Column"}
+                            </Badge>
+                            <Badge
+                              variant="secondary"
+                              className="text-xs px-2 py-0.5 bg-white/10 text-white/90"
+                            >
+                              {template.template_config?.font || "Modern"}
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
             </CardContent>
+            <CardFooter className="bg-muted/50 p-4 border-t">
+              <div className="w-full text-center text-sm text-muted-foreground">
+                Scroll to see more templates
+              </div>
+            </CardFooter>
           </Card>
         </TabsContent>
       </Tabs>
@@ -1542,7 +1504,8 @@ export default function CVTemplatesPage({
   return (
     <div className="flex h-screen bg-muted/40">
       {/* Editor Sidebar */}
-      <div className="w-1/2 border-r overflow-y-auto p-6 bg-background">
+      {/* overflow-y-auto */}
+      <div className="w-1/2 border-r p-6 bg-background">
         {leftPanelView === "menu"
           ? renderSidebarContent()
           : renderSectionEditor()}
