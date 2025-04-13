@@ -37,11 +37,6 @@ const features = [
     icon: <Check className="text-green-500 w-5 h-5" />,
   },
   {
-    title: "Cloud Storage",
-    description: "Save multiple versions of your CV and access them anywhere",
-    icon: <Check className="text-green-500 w-5 h-5" />,
-  },
-  {
     title: "Public CV Sharing",
     description:
       "Create shareable links for your CV and track views and visitors",
@@ -92,7 +87,7 @@ export default function FeaturesPage() {
           </p>
           <div className="flex justify-center gap-4">
             <Button asChild>
-              <Link href="/signup">Get Started for Free</Link>
+              <Link href="/sign-up">Get Started for Free</Link>
             </Button>
             <Button variant="outline" asChild>
               <Link href="/templates">Browse Templates</Link>
