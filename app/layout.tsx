@@ -11,6 +11,7 @@ import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import PaypalProviderClient from "@/components/PaypalProviderClient";
 import LogoBlackBg from "@/components/logo-black-bg";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Header } from "@/components/header";
 import { Toaster } from "react-hot-toast";
 
@@ -118,6 +119,7 @@ export default function RootLayout({
                 <Toaster position="top-right" />
                 {children}
                 <Analytics />
+                <SpeedInsights />
 
                 <footer className="bg-gray-900 text-white py-12">
                   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
