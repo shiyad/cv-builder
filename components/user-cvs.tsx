@@ -50,6 +50,7 @@ export function UserCVs({ userId }: { userId: string }) {
 
   const handleDelete = async (id: string) => {
     setDeletingId(id);
+    debugger;
     const { error } = await supabase.from("user_cvs").delete().eq("id", id);
 
     if (error) {
@@ -146,7 +147,7 @@ export function UserCVs({ userId }: { userId: string }) {
               You haven't created any CVs yet. Get started by creating your
               first professional resume.
             </p>
-            <Link href="/cv/new">
+            <Link href="/protected/cv-editor">
               <Button className="gap-2">
                 <Plus className="h-4 w-4" />
                 Create New CV

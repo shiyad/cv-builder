@@ -48,6 +48,7 @@ import {
   ChevronUp,
   ChevronDown,
   Plus,
+  ArrowRight,
 } from "lucide-react";
 import clsx from "clsx";
 import { createClient } from "@/utils/supabase/client";
@@ -629,6 +630,8 @@ export default function CVTemplatesPage({
           toast.error("CV title cannot be empty.", { id: toastId });
           throw new Error("CV title cannot be empty.");
         }
+
+        debugger;
 
         // 4. Prepare CV Data
         const cvData = {
@@ -1259,21 +1262,21 @@ export default function CVTemplatesPage({
       {/* Tab Navigation */}
       <div className="flex border-b border-gray-200 dark:border-gray-700">
         <button
-          onClick={() => setActiveSection(null)}
-          className={`px-4 py-2 text-sm font-medium ${!activeSection ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500 hover:text-gray-700"}`}
-        >
-          <span className="flex items-center gap-2">
-            <LayoutTemplate className="w-4 h-4" />
-            Templates
-          </span>
-        </button>
-        <button
           onClick={() => setActiveSection(sections[0]?.id)}
           className={`px-4 py-2 text-sm font-medium ${activeSection ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500 hover:text-gray-700"}`}
         >
           <span className="flex items-center gap-2">
             <FileText className="w-4 h-4" />
             Sections
+          </span>
+        </button>
+        <button
+          onClick={() => setActiveSection(null)}
+          className={`px-4 py-2 text-sm font-medium ${!activeSection ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500 hover:text-gray-700"}`}
+        >
+          <span className="flex items-center gap-2">
+            <LayoutTemplate className="w-4 h-4" />
+            Templates
           </span>
         </button>
       </div>
@@ -1345,8 +1348,8 @@ export default function CVTemplatesPage({
                 onClick={() => setActiveSection(null)}
                 className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800"
               >
-                <ArrowLeft className="h-4 w-4" />
-                Back to templates
+                To templates
+                <ArrowRight className="h-4 w-4" />
               </button>
 
               <div className="space-y-2">

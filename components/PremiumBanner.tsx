@@ -51,8 +51,10 @@ export function PremiumBanner() {
       <div className="flex items-center">
         <Crown className="w-6 h-6 text-white mr-3" />
         <div>
-          <h3 className="text-lg font-bold text-white">Premium Templates</h3>
-          <p className="text-amber-100 text-sm">
+          <h4 className="text-sm font-bold text-white whitespace-nowrap">
+            Premium Templates
+          </h4>
+          <p className="text-amber-100 text-xs">
             Unlock all professional designs
           </p>
         </div>
@@ -60,7 +62,7 @@ export function PremiumBanner() {
       <Button
         variant="default"
         size="sm"
-        className="bg-white text-amber-600 hover:bg-white/90"
+        className="bg-white text-amber-600 hover:bg-white/90 px-4 py-2 text-xs md:text-base whitespace-nowrap flex-shrink-0"
         asChild
       >
         <Link href="/pricing">Upgrade</Link>

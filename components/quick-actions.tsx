@@ -15,7 +15,7 @@ export function QuickActions() {
       </h2>
       <div className="space-y-3">
         <Link
-          href="/cv/new"
+          href="/protected/cv-editor"
           className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors"
         >
           <div className="flex items-center">
