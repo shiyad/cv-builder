@@ -12,8 +12,8 @@ const blogPosts = [
       "Learn the essential elements every hiring manager looks for in a CV",
     date: "May 15, 2024",
     readTime: "5 min read",
-    author: "Sarah Johnson",
-    imageUrl: "/blog/cv-writing.jpg",
+    author: "Drew Feig",
+    imageUrl: "/opengraph-image9.png",
     category: "Career Tips",
   },
   {
@@ -42,8 +42,8 @@ const blogPosts = [
     excerpt: "Make your CV visually appealing without graphic design skills",
     date: "March 22, 2024",
     readTime: "6 min read",
-    author: "David Wilson",
-    imageUrl: "/blog/cv-design.jpg",
+    author: "Melisa Smith",
+    imageUrl: "/images/cv-design.png",
     category: "Design",
   },
   {
@@ -71,7 +71,6 @@ const blogPosts = [
 export default function BlogPage() {
   return (
     <div className="bg-white dark:bg-gray-900">
-      <Header variant="public" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
