@@ -47,7 +47,7 @@ export function PremiumBanner() {
   if (loading || isPremium) return null;
 
   return (
-    <div className="bg-gradient-to-r from-amber-500 to-amber-600 dark:from-amber-600 dark:to-amber-700 rounded-xl p-4 mb-6 flex items-center justify-between shadow-md animate-fade-in">
+    <div className="bg-gradient-to-r from-amber-500 to-amber-600 dark:from-amber-600 dark:to-amber-700 rounded-xl p-2 mb-6 flex items-center justify-between shadow-md animate-fade-in">
       <div className="flex items-center">
         <Crown className="w-6 h-6 text-white mr-3" />
         <div>
@@ -62,7 +62,7 @@ export function PremiumBanner() {
       <Button
         variant="default"
         size="sm"
-        className="bg-white text-amber-600 hover:bg-white/90 px-4 py-2 text-xs md:text-base whitespace-nowrap flex-shrink-0"
+        className="bg-white text-amber-600 hover:bg-white/90 px-2 py-0 text-xs md:text-base whitespace-nowrap flex-shrink-0"
         asChild
       >
         <Link href="/pricing">Upgrade</Link>
