@@ -115,7 +115,7 @@ export default function RootLayout({
           >
             <main className="min-h-screen flex flex-col">
               <div className="flex-1 w-full flex flex-col">
-                <Header />
+                {/* <Header variant="public" /> */}
                 <Toaster position="top-right" />
                 {children}
                 <Analytics />

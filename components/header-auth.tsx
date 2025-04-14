@@ -8,8 +8,19 @@ import { Button } from "./ui/button";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { LogOut } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
-export default function AuthButton() {
+interface AuthButtonProps {
+  variant?: "public" | "protected";
+  mobileView?: boolean;
+}
+
+export default function AuthButton({
+  variant = "public",
+  mobileView = false,
+}: AuthButtonProps) {
   const supabase = createClient();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -54,31 +65,70 @@ export default function AuthButton() {
     return <div className="h-10 w-24 animate-pulse bg-gray-200 rounded" />;
   }
 
-  return user ? (
-    <div className="flex items-center gap-4">
-      <span className="hidden sm:inline">Welcome, {user.email}</span>
-      <Button
-        variant="outline"
-        className="px-4 py-2"
-        onClick={async () => {
-          await supabase.auth.signOut();
-          setUser(null); // Ensure state is updated immediately
-          router.refresh();
-        }}
+  if (user) {
+    return (
+      <div
+        className={cn(
+          "flex items-center gap-2",
+          mobileView ? "w-full justify-between" : ""
+        )}
       >
-        Sign out
-      </Button>
-    </div>
-  ) : (
-    <div className="flex gap-2">
-      <Button asChild variant={"outline"} className="px-6 py-2">
+        {variant === "protected" && (
+          <div className="flex items-center gap-2">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={user.user_metadata?.avatar_url} />
+              <AvatarFallback>
+                {user.email?.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            {!mobileView && (
+              <span className="text-sm font-medium">
+                {user.email?.split("@")[0]}
+              </span>
+            )}
+          </div>
+        )}
+        <Button
+          variant={variant === "protected" ? "ghost" : "outline"}
+          size={mobileView ? "lg" : "default"}
+          className={cn(
+            variant === "protected" ? "text-red-600 hover:text-red-700" : "",
+            mobileView ? "w-full" : ""
+          )}
+          onClick={async () => {
+            await supabase.auth.signOut();
+            setUser(null); // Ensure state is updated immediately
+            router.refresh();
+          }}
+        >
+          <LogOut className="h-4 w-4 mr-2" />
+          Sign out
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn("flex gap-2", mobileView ? "flex-col w-full" : "")}>
+      <Button
+        asChild
+        variant={mobileView ? "outline" : "ghost"}
+        size={mobileView ? "lg" : "default"}
+        className={mobileView ? "w-full" : ""}
+      >
         <Link href="/sign-in">Login</Link>
       </Button>
       <Button
         asChild
-        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white"
+        size={mobileView ? "lg" : "default"}
+        className={cn(
+          "bg-blue-600 hover:bg-blue-700 text-white",
+          mobileView ? "w-full" : ""
+        )}
       >
-        <Link href="/sign-up">Create CV Now</Link>
+        <Link href="/sign-up">
+          {variant === "public" ? "Create CV Now" : "Sign Up"}
+        </Link>
       </Button>
     </div>
   );

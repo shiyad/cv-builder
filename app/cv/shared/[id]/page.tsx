@@ -29,6 +29,7 @@ import { Download, FileText, Sparkles } from "lucide-react";
 import { DownloadButton } from "@/components/cv/download-button";
 import { motion } from "framer-motion";
 import { trackView } from "@/actions/track-view";
+import { Header } from "@/components/header";
 
 type FormData = {
   contact_information?: {
@@ -266,6 +267,7 @@ export default function Page() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <Header variant="public" />
       {/* Premium Header Bar */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}

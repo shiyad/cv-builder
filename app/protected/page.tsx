@@ -8,6 +8,7 @@ import { ActivityFeed } from "@/components/activity-feed";
 import { QuickActions } from "@/components/quick-actions";
 import { UserCVs } from "@/components/user-cvs";
 import { FileText } from "lucide-react";
+import { Header } from "@/components/header";
 
 export default async function Dashboard() {
   const supabase = await createClient();
@@ -19,9 +20,10 @@ export default async function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+      <Header variant="protected" />
       <DashboardHeader />
 
-      <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto px-4 py-2 sm:px-6 lg:px-8">
         <div className="space-y-8">
           <WelcomeBanner />
 

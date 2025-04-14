@@ -1,6 +1,6 @@
 import { Header } from "@/components/header";
 
-export default async function Layout({
+export default async function GuideLayout({
   children,
 }: {
   children: React.ReactNode;

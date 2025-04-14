@@ -1302,7 +1302,7 @@ export default function CVTemplatesPage({
                           src={template.thumbnail_url}
                           alt={template.name}
                           fill
-                          className="object-fill object-top"
+                          className="object-contain object-top py-3"
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           priority={selectedTemplate?.id === template.id}
                         />
@@ -1426,7 +1426,7 @@ export default function CVTemplatesPage({
   const renderPreviewPanel = () => (
     <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900">
       {/* Preview Header */}
-      <div className="flex justify-between items-center px-4 py-3 border-b bg-white dark:bg-gray-800 sticky top-0 z-10">
+      <div className="flex justify-between items-center px-4 py-2 border-b bg-white dark:bg-gray-800 sticky top-0 z-10">
         <div className="text-sm text-gray-500 dark:text-gray-400">Preview</div>
         <div className="flex items-center gap-2">
           {selectedTemplate && <CVLinkManager cvId={selectedTemplate.id} />}

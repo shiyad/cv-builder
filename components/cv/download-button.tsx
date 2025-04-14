@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, FileText } from "lucide-react";
 import { saveAs } from "file-saver";
 import { toast } from "react-hot-toast";
 import { createClient } from "@/utils/supabase/client";
@@ -423,18 +423,41 @@ export function DownloadButton({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">
-          <Download className="h-4 w-4 mr-2" />
-          Download
+        <Button
+          variant="outline"
+          className="group relative overflow-hidden border border-blue-500 bg-gradient-to-r from-blue-600/10 to-blue-400/10 hover:from-blue-600/20 hover:to-blue-400/20 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-all duration-300 shadow-sm hover:shadow-md"
+        >
+          <span className="relative z-10 flex items-center">
+            <Download className="h-4 w-4 mr-2 transition-transform group-hover:scale-110" />
+            <span className="font-medium">Download CV</span>
+          </span>
+          <span className="absolute inset-0 bg-gradient-to-r from-blue-600/0 to-blue-400/0 group-hover:from-blue-600/10 group-hover:to-blue-400/10 transition-all duration-500"></span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => handleDownload("pdf")}>
-          PDF
+      <DropdownMenuContent
+        align="end"
+        className="min-w-[180px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl overflow-hidden"
+      >
+        <DropdownMenuItem
+          onClick={() => handleDownload("pdf")}
+          className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer group"
+        >
+          <FileText className="h-4 w-4 mr-2 text-blue-500 group-hover:text-blue-600" />
+          <span>PDF Format</span>
+          <span className="ml-auto text-xs text-gray-500 dark:text-gray-400">
+            .pdf
+          </span>
         </DropdownMenuItem>
-        {/* <DropdownMenuItem onClick={() => handleDownload("docx")}>
-          Word (DOCX)
-        </DropdownMenuItem> */}
+        {/*
+      <DropdownMenuItem 
+        onClick={() => handleDownload("docx")}
+        className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer group"
+      >
+        <FileText className="h-4 w-4 mr-2 text-blue-500 group-hover:text-blue-600" />
+        <span>Word Document</span>
+        <span className="ml-auto text-xs text-gray-500 dark:text-gray-400">.docx</span>
+      </DropdownMenuItem>
+      */}
       </DropdownMenuContent>
     </DropdownMenu>
   );

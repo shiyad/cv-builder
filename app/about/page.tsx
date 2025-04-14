@@ -2,6 +2,7 @@ import { Users, Rocket, BarChart2, HeartHandshake } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Header } from "@/components/header";
 
 const stats = [
   { value: "50,000+", label: "CVs Created" },
@@ -44,6 +45,7 @@ const team = [
 export default function AboutPage() {
   return (
     <div className="bg-white dark:bg-gray-900">
+      <Header variant="public" />
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-900 dark:to-blue-950 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
