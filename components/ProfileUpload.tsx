@@ -86,10 +86,9 @@ export const ProfileUpload = ({
       {displayUrl ? (
         <div className="relative group">
           <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200">
-            <Image
+            <img
               src={displayUrl}
               alt="Profile preview"
-              fill
               className="object-cover"
             />
           </div>

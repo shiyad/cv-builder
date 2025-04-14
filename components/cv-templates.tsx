@@ -45,6 +45,9 @@ import {
   X,
   Star,
   Crown,
+  ChevronUp,
+  ChevronDown,
+  Plus,
 } from "lucide-react";
 import clsx from "clsx";
 import { createClient } from "@/utils/supabase/client";
@@ -287,6 +290,9 @@ export default function CVTemplatesPage({
   const [isLoading, setIsLoading] = useState(false);
   const [cvId, setCvId] = useState(initialData?.id || null); // useState<string | null>(null);
   const [cvTitle, setCvTitle] = useState(initialData?.title || "My CV"); // useState("My CV");
+  const [expandedSections, setExpandedSections] = useState<
+    Record<string, boolean>
+  >({});
   const supabase = createClient();
   const router = useRouter();
 
@@ -899,6 +905,14 @@ export default function CVTemplatesPage({
     }
   };
 
+  // Toggle section expansion
+  const toggleSection = (sectionId: string) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [sectionId]: !prev[sectionId],
+    }));
+  };
+
   const renderFormFields = (section: Section) => {
     const isArray = section.schema?.type === "array";
     const properties = isArray
@@ -913,70 +927,93 @@ export default function CVTemplatesPage({
       if (!Array.isArray(items)) return null;
 
       return (
-        <div className="space-y-6">
-          {items.map((item: any, index: number) => (
-            <div
-              key={index}
-              className="border p-4 rounded-md space-y-3 relative"
-            >
-              {Object.entries(properties).map(
-                ([fieldKey, config]: [string, any]) => (
-                  <div key={fieldKey}>
-                    <Label>{config.title || fieldKey}</Label>
-                    {config.enum ? (
-                      <select
-                        className="w-full border rounded px-3 py-2"
-                        value={item?.[fieldKey] || ""}
-                        onChange={(e) =>
-                          handleInputChange(
-                            section.key as keyof FormData,
-                            fieldKey,
-                            e.target.value,
-                            index
-                          )
-                        }
-                      >
-                        <option value="">Select</option>
-                        {config.enum.map((option: string) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <Input
-                        type={config.format === "date" ? "date" : "text"}
-                        value={item?.[fieldKey] || ""}
-                        placeholder={fieldKey}
-                        onChange={(e) =>
-                          handleInputChange(
-                            section.key as keyof FormData,
-                            fieldKey,
-                            e.target.value,
-                            index
-                          )
-                        }
-                      />
-                    )}
-                  </div>
-                )
-              )}
-              <Button
-                variant="destructive"
-                size="sm"
-                className="absolute top-2 right-2"
-                onClick={() => handleRemoveArrayItem(section.key, index)}
+        <div className="space-y-4">
+          <div className="space-y-4">
+            {items.map((item: any, index: number) => (
+              <div
+                key={index}
+                className="relative p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
               >
-                Remove
-              </Button>
-            </div>
-          ))}
-          <Button
-            variant="outline"
+                <div className="space-y-4">
+                  {Object.entries(properties).map(
+                    ([fieldKey, config]: [string, any]) => (
+                      <div key={fieldKey} className="space-y-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          {config.title || fieldKey}
+                        </label>
+                        {config.enum ? (
+                          <select
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-colors"
+                            value={item?.[fieldKey] || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                section.key as keyof FormData,
+                                fieldKey,
+                                e.target.value,
+                                index
+                              )
+                            }
+                          >
+                            <option value="">Select {fieldKey}</option>
+                            {config.enum.map((option: string) => (
+                              <option key={option} value={option}>
+                                {option}
+                              </option>
+                            ))}
+                          </select>
+                        ) : config.format === "date" ? (
+                          <input
+                            type="date"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-colors"
+                            value={item?.[fieldKey] || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                section.key as keyof FormData,
+                                fieldKey,
+                                e.target.value,
+                                index
+                              )
+                            }
+                          />
+                        ) : (
+                          <input
+                            type="text"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-colors"
+                            value={item?.[fieldKey] || ""}
+                            placeholder={`Enter ${config.title || fieldKey}`}
+                            onChange={(e) =>
+                              handleInputChange(
+                                section.key as keyof FormData,
+                                fieldKey,
+                                e.target.value,
+                                index
+                              )
+                            }
+                          />
+                        )}
+                      </div>
+                    )
+                  )}
+                </div>
+
+                <button
+                  onClick={() => handleRemoveArrayItem(section.key, index)}
+                  className="absolute top-3 right-3 p-1 text-gray-400 hover:text-red-500 transition-colors"
+                  aria-label={`Remove ${section.display_name}`}
+                >
+                  <Trash2 className="h-5 w-5" />
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <button
             onClick={() => handleAddArrayItem(section.key)}
+            className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 rounded-lg border border-dashed border-blue-200 dark:border-blue-800 transition-colors"
           >
+            <Plus className="w-4 h-4 mr-2" />
             Add {section.display_name}
-          </Button>
+          </button>
         </div>
       );
     }
@@ -1000,16 +1037,20 @@ export default function CVTemplatesPage({
         )}
 
         {section.key === "objective" && (
-          <div>
-            <Label>Summary</Label>
-            <Input
-              type="text"
+          <div className="space-y-2">
+            <Label>Professional Summary</Label>
+            <textarea
               value={form.objective?.summary || ""}
-              placeholder="Enter your professional summary"
               onChange={(e) =>
                 handleInputChange("objective", "summary", e.target.value)
               }
+              placeholder="Example: Experienced software engineer with 5+ years in web development specializing in React and Node.js..."
+              className="w-full min-h-[120px] p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white transition-colors"
+              rows={4}
             />
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Write 2-4 sentences about your professional background and goals
+            </p>
           </div>
         )}
 
@@ -1115,284 +1156,244 @@ export default function CVTemplatesPage({
   };
 
   const renderMobileHeader = () => (
-    <div className="lg:hidden sticky top-0 z-50 bg-background border-b p-4 flex items-center justify-between shadow-sm">
-      <Button
-        variant="ghost"
-        size="icon"
+    <div className="lg:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 border-b p-4 flex items-center justify-between shadow-sm">
+      <button
         onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-        className="rounded-full"
+        className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200"
       >
         {mobileSidebarOpen ? (
           <X className="h-5 w-5" />
         ) : (
           <Menu className="h-5 w-5" />
         )}
-      </Button>
+      </button>
 
       <div className="flex items-center gap-2">
-        <Badge variant="outline" className="px-3 py-1 text-sm">
+        <span className="px-3 py-1 text-sm font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full">
           {cvTitle || "My CV"}
-        </Badge>
+        </span>
       </div>
 
       <div className="flex items-center gap-2">
-        <Button
-          variant={mobileView === "editor" ? "default" : "ghost"}
-          size="sm"
+        <button
           onClick={() => setMobileView("editor")}
-          className="rounded-full"
+          className={`px-3 py-1 text-sm rounded-full ${mobileView === "editor" ? "bg-blue-600 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200"}`}
         >
           Edit
-        </Button>
-        <Button
-          variant={mobileView === "preview" ? "default" : "ghost"}
-          size="sm"
+        </button>
+        <button
           onClick={() => setMobileView("preview")}
-          className="rounded-full"
+          className={`px-3 py-1 text-sm rounded-full ${mobileView === "preview" ? "bg-blue-600 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200"}`}
         >
           Preview
-        </Button>
+        </button>
       </div>
     </div>
   );
 
   const renderSidebarContent = () => (
-    <>
-      {/* Premium Banner */}
+    <div className="space-y-6">
       <PremiumBanner />
 
-      {/* Title and Actions Bar */}
-      <div className="flex flex-col sm:flex-row items-center gap-4 bg-gradient-to-r from-primary/5 to-muted/10 p-4 rounded-xl mb-6">
-        <Input
+      {/* Title and Actions */}
+      <div className="flex flex-col sm:flex-row items-center gap-4 bg-gradient-to-r from-blue-50 to-gray-50 dark:from-gray-800 dark:to-gray-700 p-4 rounded-xl mb-6">
+        <input
           value={cvTitle}
           onChange={(e) => setCvTitle(e.target.value)}
           placeholder="CV Title"
-          className="flex-1 min-w-0 bg-background"
+          className="flex-1 min-w-0 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
 
         <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="flex items-center space-x-2">
-                  <Label htmlFor="public-toggle" className="cursor-pointer">
-                    {form.is_public ? (
-                      <Eye className="h-5 w-5 text-primary" />
-                    ) : (
-                      <EyeOff className="h-5 w-5 text-muted-foreground" />
-                    )}
-                  </Label>
-                  <Switch
-                    id="public-toggle"
-                    checked={form.is_public || false}
-                    onCheckedChange={(checked) =>
-                      setForm((prev) => ({
-                        ...prev,
-                        is_public: checked,
-                      }))
-                    }
-                  />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                {form.is_public ? "Public CV" : "Private CV"}
-              </TooltipContent>
-            </Tooltip>
-
-            <Button
-              onClick={() => saveCV(false)}
-              disabled={isLoading}
-              size="sm"
-              className="gap-2"
-            >
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+          <div className="flex items-center space-x-2">
+            <label htmlFor="public-toggle" className="cursor-pointer">
+              {form.is_public ? (
+                <Eye className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               ) : (
-                <Save className="h-4 w-4" />
+                <EyeOff className="h-5 w-5 text-gray-500 dark:text-gray-400" />
               )}
-              Save
-            </Button>
-          </TooltipProvider>
+            </label>
+
+            {/* Toggle Switch */}
+            <div className="relative inline-block w-10 align-middle select-none">
+              <input
+                type="checkbox"
+                id="public-toggle"
+                checked={form.is_public || false}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, is_public: e.target.checked }))
+                }
+                className="sr-only" // Hide the default checkbox visually but keep it accessible
+              />
+              <label
+                htmlFor="public-toggle"
+                className={`block overflow-hidden h-6 rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${
+                  form.is_public
+                    ? "bg-blue-500"
+                    : "bg-gray-300 dark:bg-gray-600"
+                }`}
+              >
+                <span
+                  className={`absolute left-0 top-0 h-6 w-6 rounded-full bg-white shadow-md transform transition-transform duration-200 ease-in-out ${
+                    form.is_public ? "translate-x-4" : "translate-x-0"
+                  }`}
+                />
+              </label>
+            </div>
+          </div>
+
+          <button
+            onClick={() => saveCV(false)}
+            disabled={isLoading}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="h-4 w-4" />
+            )}
+          </button>
         </div>
       </div>
 
-      {/* Main Content */}
-      <Tabs defaultValue="templates">
-        <TabsList className="grid grid-cols-2 w-full bg-muted/50 rounded-lg p-1">
-          <TabsTrigger value="sections" className="flex gap-2 py-2 rounded-md">
-            <FileText className="w-4 h-4" />
-            <span>Sections</span>
-          </TabsTrigger>
-          <TabsTrigger value="templates" className="flex gap-2 py-2 rounded-md">
+      {/* Tab Navigation */}
+      <div className="flex border-b border-gray-200 dark:border-gray-700">
+        <button
+          onClick={() => setActiveSection(null)}
+          className={`px-4 py-2 text-sm font-medium ${!activeSection ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500 hover:text-gray-700"}`}
+        >
+          <span className="flex items-center gap-2">
             <LayoutTemplate className="w-4 h-4" />
-            <span>Templates</span>
-          </TabsTrigger>
-        </TabsList>
+            Templates
+          </span>
+        </button>
+        <button
+          onClick={() => setActiveSection(sections[0]?.id)}
+          className={`px-4 py-2 text-sm font-medium ${activeSection ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500 hover:text-gray-700"}`}
+        >
+          <span className="flex items-center gap-2">
+            <FileText className="w-4 h-4" />
+            Sections
+          </span>
+        </button>
+      </div>
 
-        {/* Sections Panel */}
-        <TabsContent value="sections" className="pt-4">
-          <Card className="border-none shadow-sm rounded-xl">
-            <CardHeader className="px-4 py-3">
-              <CardTitle className="text-lg font-semibold">
-                CV Sections
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-2 space-y-1">
-              {sections.map((section) => (
-                <div
-                  key={section.id}
-                  onClick={() => {
-                    setActiveSection(section.id);
-                    setLeftPanelView("form");
-                    if (!isDesktop) setMobileSidebarOpen(false);
-                  }}
-                  className={clsx(
-                    "p-3 rounded-lg cursor-pointer flex items-center gap-3 transition-colors",
-                    "hover:bg-accent/50",
-                    activeSection === section.id && "bg-accent"
-                  )}
-                >
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center p-2 text-primary">
-                    {section.icon}
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-medium">
-                      {section.display_name}
-                    </h3>
-                    <p className="text-xs text-muted-foreground">
-                      {section.schema.type === "array"
-                        ? `Manage your ${section.display_name.toLowerCase()}`
-                        : "Edit details"}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Enhanced Templates Panel */}
-        <TabsContent value="templates" className="pt-4">
-          <Card className="border-none shadow-lg rounded-xl overflow-hidden">
-            <CardHeader className="px-6 py-4 bg-gradient-to-r from-primary/5 to-muted/10">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-xl font-semibold text-primary">
-                  Choose a Template
-                </CardTitle>
-                <Badge
-                  variant="outline"
-                  className="px-3 py-1 text-sm font-medium bg-background"
-                >
-                  {templates.length} Templates Available
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="p-6">
-              {/* Template Categories */}
-              <div className="flex flex-wrap gap-2 mb-6">
-                <Button variant="default" size="sm" className="rounded-full">
-                  All
-                </Button>
-                <Button variant="outline" size="sm" className="rounded-full">
-                  Modern
-                </Button>
-                <Button variant="outline" size="sm" className="rounded-full">
-                  Classic
-                </Button>
-                <Button variant="outline" size="sm" className="rounded-full">
-                  <Star className="w-3 h-3 mr-1 text-amber-500" />
-                  Premium
-                </Button>
-              </div>
-              <ScrollArea className="h-[32rem] rounded-md border">
-                {/* Template Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {templates.map((template) => (
-                    <div
-                      key={template.id}
-                      className={clsx(
-                        "group relative rounded-xl overflow-hidden h-[280px]",
-                        "border-2 cursor-pointer transition-all duration-300",
-                        "hover:shadow-xl hover:border-primary/40 hover:scale-[1.02]",
-                        "transform-gpu will-change-transform",
-                        selectedTemplate?.id === template.id
-                          ? "ring-4 ring-primary border-primary/70 shadow-lg"
-                          : "border-muted/30"
-                      )}
-                      onClick={() => {
-                        setSelectedTemplate(template);
-                        if (!isDesktop) setMobileSidebarOpen(false);
-                      }}
-                    >
-                      {/* Template Thumbnail */}
-                      <div className="absolute inset-0">
+      {/* Content Area */}
+      <div className="space-y-4">
+        {!activeSection ? (
+          <>
+            {/* Templates View */}
+            <div className="space-y-4">
+              {/* <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Choose a Template
+              </h3> */}
+              {/* In your renderSidebarContent or template selection section */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {templates.map((template) => (
+                  <div
+                    key={template.id}
+                    onClick={() => setSelectedTemplate(template)}
+                    className={`relative rounded-md overflow-hidden border-2 cursor-pointer transition-all duration-300 group h-48 ${selectedTemplate?.id === template.id ? "ring-2 ring-blue-500 border-blue-500" : "border-gray-200 dark:border-gray-700 hover:border-blue-300"}`}
+                  >
+                    {/* Add a fixed height container */}
+                    <div className="relative h-full w-full">
+                      {template.thumbnail_url ? (
                         <Image
                           src={template.thumbnail_url}
                           alt={template.name}
                           fill
-                          className="object-cover object-top"
-                          quality={100}
+                          className="object-fill object-top"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           priority={selectedTemplate?.id === template.id}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
-                      </div>
-
-                      {/* Premium Badge */}
-                      {template.is_premium && (
-                        <div className="absolute top-3 right-3">
-                          <Badge className="px-3 py-1 text-xs font-bold bg-gradient-to-r from-amber-500 to-amber-600 shadow-md">
-                            <Star className="w-3 h-3 mr-1" />
-                            Premium
-                          </Badge>
+                      ) : (
+                        <div className="bg-gray-200 dark:bg-gray-700 h-full w-full flex items-center justify-center">
+                          <span className="text-gray-500">No preview</span>
                         </div>
                       )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-black/10 to-transparent" />
+                    </div>
 
-                      {/* Template Info */}
-                      <div className="relative z-10 h-full flex flex-col justify-end p-5">
-                        <div className="flex flex-col gap-2">
-                          <div className="flex justify-between items-center">
-                            <h3 className="text-white font-bold text-lg drop-shadow-lg">
-                              {template.name}
-                            </h3>
-                            {selectedTemplate?.id === template.id && (
-                              <div className="w-7 h-7 flex items-center justify-center bg-primary rounded-full text-white shadow-lg">
-                                <Check className="h-4 w-4" />
-                              </div>
-                            )}
+                    <div className="absolute bottom-0 left-0 right-0 p-4">
+                      <div className="flex justify-between items-center">
+                        <h4 className="text-white text-xs font-semibold">
+                          {template.name}
+                        </h4>
+                        {selectedTemplate?.id === template.id && (
+                          <div className="w-6 h-6 flex items-center justify-center bg-blue-500 rounded-full text-white">
+                            <Check className="h-4 w-4" />
                           </div>
+                        )}
+                      </div>
+                      {template.is_premium && (
+                        <span className="inline-flex items-center px-2 py-1 mt-1 text-xs font-bold text-amber-800 bg-amber-100 rounded-full">
+                          <Star className="w-3 h-3 mr-1" />
+                          Premium
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Sections View */}
+            <div className="space-y-4">
+              <button
+                onClick={() => setActiveSection(null)}
+                className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back to templates
+              </button>
 
-                          {/* Template Features */}
-                          <div className="flex flex-wrap gap-1.5">
-                            <Badge
-                              variant="secondary"
-                              className="text-xs px-2 py-0.5 bg-white/10 text-white/90"
-                            >
-                              {template.template_config?.layout ||
-                                "Single Column"}
-                            </Badge>
-                            <Badge
-                              variant="secondary"
-                              className="text-xs px-2 py-0.5 bg-white/10 text-white/90"
-                            >
-                              {template.template_config?.font || "Modern"}
-                            </Badge>
-                          </div>
+              <div className="space-y-2">
+                {sections.map((section) => (
+                  <div
+                    key={section.id}
+                    className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700"
+                  >
+                    <button
+                      onClick={() => toggleSection(section.id)}
+                      className={`w-full flex items-center justify-between p-4 ${activeSection === section.id ? "bg-blue-50 dark:bg-gray-800" : "bg-white dark:bg-gray-900"} hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                          {section.icon}
+                        </div>
+                        <div className="text-left">
+                          <h4 className="font-medium text-gray-900 dark:text-white">
+                            {section.display_name}
+                          </h4>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {section.schema.type === "array"
+                              ? `Manage your ${section.display_name.toLowerCase()}`
+                              : "Edit details"}
+                          </p>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            </CardContent>
-            <CardFooter className="bg-muted/50 p-4 border-t">
-              <div className="w-full text-center text-sm text-muted-foreground">
-                Scroll to see more templates
+                      {expandedSections[section.id] ? (
+                        <ChevronUp className="h-5 w-5 text-gray-400" />
+                      ) : (
+                        <ChevronDown className="h-5 w-5 text-gray-400" />
+                      )}
+                    </button>
+
+                    {expandedSections[section.id] && (
+                      <div className="p-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+                        {renderFormFields(section)}
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
   );
 
   const renderSectionEditor = () => (
@@ -1423,14 +1424,12 @@ export default function CVTemplatesPage({
   );
 
   const renderPreviewPanel = () => (
-    <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900 print:bg-white print:p-0 print:m-0">
+    <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900">
       {/* Preview Header */}
-      <div className="flex justify-between items-center px-4 py-2 border-b bg-white dark:bg-gray-800 sticky top-0 z-10 print:hidden">
-        <div className="text-sm text-muted-foreground">Preview Mode</div>
+      <div className="flex justify-between items-center px-4 py-3 border-b bg-white dark:bg-gray-800 sticky top-0 z-10">
+        <div className="text-sm text-gray-500 dark:text-gray-400">Preview</div>
         <div className="flex items-center gap-2">
-          {selectedTemplate !== undefined && (
-            <CVLinkManager cvId={selectedTemplate.id} />
-          )}
+          {selectedTemplate && <CVLinkManager cvId={selectedTemplate.id} />}
           {cvId && cvTitle && (
             <DownloadButton
               cv={{
@@ -1449,47 +1448,33 @@ export default function CVTemplatesPage({
       </div>
 
       {/* CV Preview Content */}
-      <ScrollArea className="flex-1">
-        <div className="flex justify-center print:p-0 print:m-0 p-4 print:block">
-          <div
-            id="cv-preview-wrapper"
-            className="w-full max-w-[900px] print:w-full print:max-w-none bg-white shadow-sm overflow-hidden"
-          >
-            {renderPreview()}
-          </div>
+      <div className="flex-1 overflow-auto p-4">
+        <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg overflow-hidden">
+          {renderPreview()}
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 
+  // Mobile layout
   if (!isDesktop) {
     return (
-      <div className="flex flex-col h-screen bg-muted/40">
+      <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900">
         {renderMobileHeader()}
 
         <div className="flex-1 overflow-hidden relative">
-          {/* Mobile Sidebar Drawer */}
-          <Drawer
-            open={mobileSidebarOpen}
-            onOpenChange={setMobileSidebarOpen}
-            direction="left"
-          >
-            <DrawerContent className="h-full top-0 left-0 right-auto mt-0 w-[300px] rounded-none">
-              <div className="p-4 h-full overflow-y-auto">
-                {leftPanelView === "menu"
-                  ? renderSidebarContent()
-                  : renderSectionEditor()}
-              </div>
-            </DrawerContent>
-          </Drawer>
+          {/* Mobile Sidebar */}
+          {mobileSidebarOpen && (
+            <div className="absolute inset-y-0 left-0 z-40 w-72 bg-white dark:bg-gray-900 shadow-lg overflow-y-auto p-4">
+              {renderSidebarContent()}
+            </div>
+          )}
 
           {/* Main Content */}
           <div className="h-full">
             {mobileView === "editor" ? (
               <div className="p-4 h-full overflow-y-auto">
-                {leftPanelView === "menu"
-                  ? renderSidebarContent()
-                  : renderSectionEditor()}
+                {renderSidebarContent()}
               </div>
             ) : (
               renderPreviewPanel()
@@ -1500,21 +1485,16 @@ export default function CVTemplatesPage({
     );
   }
 
-  // Desktop Layout
+  // Desktop layout
   return (
-    <div className="flex h-screen bg-muted/40">
+    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
       {/* Editor Sidebar */}
-      {/* overflow-y-auto */}
-      <div className="w-1/2 border-r p-6 bg-background">
-        {leftPanelView === "menu"
-          ? renderSidebarContent()
-          : renderSectionEditor()}
+      <div className="w-96 border-r border-gray-200 dark:border-gray-700 p-6 bg-white dark:bg-gray-900 overflow-y-auto">
+        {renderSidebarContent()}
       </div>
 
       {/* Preview Panel */}
-      <div className="w-1/2 overflow-y-auto flex flex-col bg-gray-50 dark:bg-gray-900 print:bg-white print:p-0 print:m-0">
-        {renderPreviewPanel()}
-      </div>
+      <div className="flex-1 overflow-hidden">{renderPreviewPanel()}</div>
     </div>
   );
 }
